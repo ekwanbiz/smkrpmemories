@@ -6,6 +6,9 @@
 <title>SMKRP MEMORIES</title>
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SMKRP Memories">
 <meta name="theme-color" content="#123a8c">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -65,6 +68,9 @@ td{padding:12px 10px;border-top:1px solid #eef1f7}
 .vw{position:relative;max-width:100%}
 .vw img{max-width:100%;max-height:76vh;display:block;border-radius:8px}
 .vw .box{position:absolute;border:3px solid var(--acc);border-radius:8px}
+.pasang h2{display:flex;align-items:center;gap:8px}
+.pasang ol{margin:8px 0 0;padding-left:22px}.pasang li{margin:6px 0}
+.ikon{display:inline-flex;vertical-align:middle;padding:2px 6px;border-radius:6px;background:#eef2fb;font-weight:600;font-size:14px}
 .hide{display:none!important}
 .err{color:var(--bad);font-size:14px;margin-top:8px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -93,6 +99,29 @@ td{padding:12px 10px;border-top:1px solid #eef1f7}
       <div id="errUtama" class="err"></div>
     </div>
     <p class="nota">Selfie anda tidak disimpan. Hanya gambar langsung dari kamera diterima — upload dari galeri tidak dibenarkan.</p>
+    <div id="kadPasang" class="card pasang">
+      <h2>Pasang app di telefon</h2>
+      <p class="mut" style="margin:0">Pasang sekali, kemudian buka terus dari skrin utama seperti app biasa.</p>
+      <button id="btnPasang" class="btn kuning penuh hide" style="margin-top:12px">Pasang app sekarang</button>
+      <div id="caraAndroid">
+        <p style="margin:14px 0 0"><b>Android (Chrome)</b></p>
+        <ol>
+          <li>Tekan menu <span class="ikon">⋮</span> di penjuru kanan atas</li>
+          <li>Pilih <b>Add to Home screen</b> atau <b>Install app</b></li>
+          <li>Tekan <b>Install</b> / <b>Add</b></li>
+        </ol>
+      </div>
+      <div id="caraIos">
+        <p style="margin:14px 0 0"><b>iPhone / iPad (Safari)</b></p>
+        <ol>
+          <li>Buka link ini dalam <b>Safari</b> (bukan dalam WhatsApp atau Chrome)</li>
+          <li>Tekan butang <b>Share</b> <span class="ikon">⬆</span> di bawah skrin</li>
+          <li>Skrol dan pilih <b>Add to Home Screen</b></li>
+          <li>Tekan <b>Add</b></li>
+        </ol>
+      </div>
+      <p class="mut" style="margin:12px 0 0">Buka dari WhatsApp? Tekan <span class="ikon">⋮</span> dan pilih <b>Buka dalam browser</b> dahulu.</p>
+    </div>
   </section>
 
   <!-- ========== SELFIE ========== -->
@@ -455,6 +484,25 @@ async function imbas(f) {
   admMuat();
 }
 $('btnHenti').onclick = () => { henti = true; };
+
+/* ================= PASANG (PWA) ================= */
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const android = /android/i.test(navigator.userAgent);
+if (standalone) $('kadPasang').classList.add('hide');
+else if (ios) $('caraAndroid').classList.add('hide');
+else if (android) $('caraIos').classList.add('hide');
+let promptPasang = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); promptPasang = e; $('btnPasang').classList.remove('hide'); });
+$('btnPasang').onclick = async () => {
+  if (!promptPasang) return;
+  promptPasang.prompt();
+  const r = await promptPasang.userChoice;
+  promptPasang = null; $('btnPasang').classList.add('hide');
+  if (r.outcome === 'accepted') $('kadPasang').classList.add('hide');
+};
+window.addEventListener('appinstalled', () => $('kadPasang').classList.add('hide'));
 
 /* ================= MULA ================= */
 (async () => {
