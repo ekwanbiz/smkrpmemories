@@ -4,12 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SMKRP MEMORIES</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="theme-color" content="#123a8c">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--brand:#123a8c;--acc:#ffc928;--bg:#f4f6fb;--card:#fff;--ink:#111827;--mut:#5b6478;--line:#dde3ef;--ok:#16a34a;--bad:#dc2626}
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif}
 header{background:var(--brand);color:#fff;padding:28px max(5vw,20px) 64px}
+header .atas{display:flex;align-items:center;gap:14px}
+header .logo{width:clamp(64px,16vw,88px);height:auto;flex:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))}
 header .kecil{font-size:13px;color:#c9d6f5}
 h1{font:800 clamp(32px,8vw,44px)/1.05 Outfit,sans-serif;margin:4px 0}
 h1 span,.acc{color:var(--acc)}
@@ -67,8 +72,13 @@ td{padding:12px 10px;border-top:1px solid #eef1f7}
 </head>
 <body>
 <header>
-  <div class="kecil" id="hdrKecil">Kenangan sekolah</div>
-  <h1>SMKRP <span>MEMORIES</span></h1>
+  <div class="atas">
+    <img class="logo" src="logo.png" alt="Logo SMK Rantau Panjang">
+    <div>
+      <div class="kecil" id="hdrKecil">Kenangan sekolah</div>
+      <h1>SMKRP <span>MEMORIES</span></h1>
+    </div>
+  </div>
   <div id="hdrInfo" style="color:#e3eaff">Cari semua gambar anda dari majlis sekolah dengan satu selfie.</div>
 </header>
 
