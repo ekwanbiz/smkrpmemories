@@ -341,6 +341,15 @@ input[type=text],input[type=password]{min-height:46px;padding:0 12px;border-radi
     <button id="pSalin" class="btn alt penuh" style="margin-top:12px">Salin link app</button>
   </div>
 </div>
+<div id="sedia" class="modal" role="dialog" aria-modal="true" aria-labelledby="sediaTajuk">
+  <div class="sheet" style="text-align:center">
+    <div style="width:64px;height:64px;border-radius:50%;background:var(--kuning2);color:var(--navy);display:flex;align-items:center;justify-content:center;margin:0 auto 12px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg></div>
+    <h2 id="sediaTajuk">Gambar sedia</h2>
+    <p class="mut" id="sediaTeks" style="margin:6px 0 14px"></p>
+    <button id="btnSimpanGaleri" class="btn kuning penuh">Simpan ke galeri</button>
+    <button id="btnSediaBatal" class="btn alt penuh" style="margin-top:8px">Batal</button>
+  </div>
+</div>
 <div id="toast" class="toast hide" role="status"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/dist/face-api.js"></script>
@@ -636,21 +645,40 @@ async function salinanBaru(blob, nama) {
   } catch (e) { console.warn(e); }
   return new File([blob], asas + '.jpg', { type: blob.type || 'image/jpeg', lastModified: Date.now() });
 }
-// iPhone: menu Share → "Save Image" terus ke Photos. Android: simpan ke telefon, muncul dalam Gallery.
-async function simpanKeGaleri(files) {
-  if (ios && navigator.canShare && navigator.canShare({ files })) {
-    try { await navigator.share({ files }); return 'kongsi'; }
-    catch (e) { if (e.name === 'AbortError') return 'batal'; }
-  }
-  for (const f of files) {
-    const u = URL.createObjectURL(f); muatTurunFail(u, f.name);
-    await new Promise(r => setTimeout(r, 500)); setTimeout(() => URL.revokeObjectURL(u), 10000);
-  }
-  return 'muat';
+// Langkah 2: pengguna tekan "Simpan ke galeri" — telefon hanya benarkan simpan sejurus selepas tekanan butang
+let sediaFail = [];
+function tunjukSedia(files) {
+  sediaFail = files;
+  const n = files.length;
+  $('sediaTajuk').textContent = n > 1 ? n + ' gambar sedia' : 'Gambar sedia';
+  $('sediaTeks').textContent = ios
+    ? 'Tekan butang di bawah, kemudian pilih "Save Image" untuk simpan ke Photos.'
+    : 'Tekan butang di bawah. Gambar akan masuk ke galeri telefon (folder Download).';
+  $('btnSimpanGaleri').textContent = n > 1 ? 'Simpan ' + n + ' gambar ke galeri' : 'Simpan ke galeri';
+  $('sedia').classList.add('on');
 }
-function mesejSimpan(cara, n) {
-  if (cara === 'kongsi') return toast('Pilih "Save Image" untuk simpan ke Photos.');
-  if (cara === 'muat') return toast(n > 1 ? n + ' gambar disimpan ke galeri.' : 'Disimpan ke galeri.');
+$('btnSediaBatal').onclick = () => { $('sedia').classList.remove('on'); sediaFail = []; };
+$('btnSimpanGaleri').onclick = () => {
+  const files = sediaFail; if (!files.length) return;
+  const kongsiBoleh = navigator.canShare && navigator.canShare({ files });
+  if (ios && kongsiBoleh) {
+    // dipanggil terus dalam tekanan butang (tiada "await" sebelum ini)
+    navigator.share({ files }).then(() => { $('sedia').classList.remove('on'); toast('Disimpan. Semak app Photos.'); })
+      .catch(e => { if (e.name !== 'AbortError') { $('sedia').classList.remove('on'); bantuanIos(files[0]); } });
+    return;
+  }
+  if (ios) { $('sedia').classList.remove('on'); bantuanIos(files[0]); return; }
+  files.forEach((f, i) => setTimeout(() => {
+    const u = URL.createObjectURL(f); muatTurunFail(u, f.name); setTimeout(() => URL.revokeObjectURL(u), 15000);
+  }, i * 600));
+  $('sedia').classList.remove('on');
+  toast(files.length > 1 ? 'Menyimpan ' + files.length + ' gambar… semak notifikasi muat turun.' : 'Menyimpan… semak notifikasi muat turun.');
+};
+// Sandaran iPhone: tekan lama gambar → "Save to Photos"
+function bantuanIos(f) {
+  const u = URL.createObjectURL(f);
+  $('lihat').classList.remove('hide'); $('lImg').src = u; $('lKotak').classList.add('hide'); $('lMuat').classList.add('hide');
+  toast('Tekan lama pada gambar, kemudian pilih "Save to Photos".');
 }
 $('btnSemua').onclick = async () => {
   const list = senaraiTapis();
@@ -663,8 +691,7 @@ $('btnSemua').onclick = async () => {
       const f = await ambilBlob(list[i].id);
       fail.push(await salinanBaru(f.blob, f.nama));
     }
-    $('lblSemua').textContent = 'Menyimpan…';
-    mesejSimpan(await simpanKeGaleri(fail), fail.length);
+    tunjukSedia(fail);
   } catch (e) { toast('Gagal: ' + e.message); }
   $('btnSemua').disabled = false; $('lblSemua').textContent = 'Muat turun semua';
 };
@@ -717,10 +744,10 @@ $('pentas').addEventListener('touchend', e => {
 $('lImg').ondblclick = () => { lZoom = !lZoom; $('lImg').style.transform = lZoom ? 'scale(2)' : ''; $('lKotak').classList.toggle('hide', lZoom); };
 $('lMuatTurun').onclick = async () => {
   const x = paparan[lIdx]; if (!x || $('lMuatTurun').disabled) return;
-  $('lMuatTurun').disabled = true; toast('Menyediakan gambar kualiti penuh…');
+  $('lMuatTurun').disabled = true; toast('Menyediakan gambar…');
   try {
     const g = await ambilBlob(x.id);
-    mesejSimpan(await simpanKeGaleri([await salinanBaru(g.blob, g.nama)]), 1);
+    tunjukSedia([await salinanBaru(g.blob, g.nama)]);
   } catch (e) { toast('Gagal: ' + e.message); }
   $('lMuatTurun').disabled = false;
 };
