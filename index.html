@@ -63,14 +63,15 @@ nav.bawah a.on{color:var(--navy);font-weight:600}
 nav.bawah a.on i{background:var(--kuning2)}
 
 /* Selfie */
-.kamera{position:fixed;inset:0;z-index:20;background:#05070f;color:#fff;display:flex;flex-direction:column;align-items:center;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);overflow-y:auto}
+.kamera{position:fixed;inset:0;z-index:20;background:#05070f;color:#fff;display:flex;flex-direction:column;align-items:center;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
 .kamera .atas{align-self:stretch;display:flex;align-items:center;gap:10px;padding:14px 16px}
 .bulatKecil{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
-.arahan{min-height:64px;padding:6px 24px 14px;text-align:center;font:600 22px/1.25 Outfit;display:flex;align-items:center;justify-content:center}
-.cam{position:relative;width:min(66vw,280px);aspect-ratio:3/4;border-radius:50% / 42%;overflow:hidden;background:#000;border:5px solid #3a4560;transition:border-color .2s}
-.cam.ok{border-color:#22c55e}.cam.tunggu{border-color:var(--kuning)}
+.arahan{position:absolute;left:0;right:0;bottom:0;padding:18px 14px;background:rgba(0,0,0,.72);text-align:center;font:600 20px/1.25 Outfit;z-index:2}
+.cam{position:relative;flex:1;width:calc(100% - 32px);max-width:480px;max-height:620px;border-radius:28px;overflow:hidden;background:#000;border:5px solid var(--kuning);transition:border-color .2s}
+.cam .oval{position:absolute;inset:12% 16%;border:3px dashed rgba(255,255,255,.75);border-radius:50%}
+.cam.ok{border-color:#22c55e}.cam.tunggu{border-color:var(--kuning)}.cam.kosong{border-color:#3a4560}
 .cam video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
-.kemajuan{width:min(66vw,280px);height:8px;border-radius:4px;background:#26304a;overflow:hidden;margin-top:16px}
+.kemajuan{width:calc(100% - 32px);max-width:480px;height:8px;border-radius:4px;background:#26304a;overflow:hidden;margin-top:16px}
 .kemajuan div{height:100%;width:0;background:var(--kuning);transition:width .15s}
 .steps{display:flex;gap:6px;justify-content:center;padding:14px 0 6px}
 .steps i{width:44px;height:7px;border-radius:4px;background:#33405e}
@@ -283,8 +284,7 @@ input[type=text],input[type=password]{min-height:46px;padding:0 12px;border-radi
     <div style="flex:1;text-align:center;font:600 17px Outfit">Selfie live</div>
     <div style="width:44px"></div>
   </div>
-  <div id="camMsg" class="arahan" aria-live="polite">Menghidupkan kamera…</div>
-  <div class="cam" id="camBox"><video id="video" playsinline muted></video></div>
+  <div class="cam" id="camBox"><video id="video" playsinline muted></video><div class="oval"></div><div id="camMsg" class="arahan" aria-live="polite">Menghidupkan kamera…</div></div>
   <div class="kemajuan"><div id="camBar"></div></div>
   <div id="steps" class="steps"></div>
   <div class="tips" id="camTips">Pegang telefon pada paras mata, sejauh lengan. Pastikan muka cukup terang.</div>
@@ -415,7 +415,7 @@ const dist = (a, b) => { let s = 0; for (let i = 0; i < 128; i++) { const d = a[
 let stream = null, running = false;
 const say = t => { $('camMsg').textContent = t; };
 const bar = p => { $('camBar').style.width = Math.max(0, Math.min(100, p)) + '%'; };
-const bingkai = k => { $('camBox').className = 'cam' + (k ? ' ' + k : ''); };
+const bingkai = k => { $('camBox').className = 'cam ' + (k || 'kosong'); };
 function yaw(lm) { // nilai mutlak = berapa banyak kepala dipusing ke tepi
   const p = lm.positions, le = p[36], re = p[45], n = p[30];
   return (n.x - (le.x + re.x) / 2) / Math.hypot(re.x - le.x, re.y - le.y);
