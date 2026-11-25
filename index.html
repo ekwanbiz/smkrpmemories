@@ -614,13 +614,44 @@ $('btnLupa').onclick = async () => {
   toast('Dipadam dari telefon ini.');
 };
 
-/* ---------- Muat turun semua ---------- */
+/* ---------- Simpan ke galeri ---------- */
 async function ambilBlob(id) {
   const g = await api('penuh', { id });
   const b = await (await fetch(g.data)).blob();
-  return { nama: g.nama, blob: b, url: g.data };
+  return { nama: g.nama, blob: b };
 }
 function muatTurunFail(url, nama) { const a = document.createElement('a'); a.href = url; a.download = nama; document.body.appendChild(a); a.click(); a.remove(); }
+// Salinan baru tanpa tarikh asal (EXIF), supaya gambar muncul paling atas dalam "Recent" galeri
+async function salinanBaru(blob, nama) {
+  const asas = 'SMKRP_' + String(nama).replace(/\.[^.]+$/, '');
+  try {
+    const bmp = await createImageBitmap(blob, { imageOrientation: 'from-image' });
+    const k = Math.min(1, 6000 / Math.max(bmp.width, bmp.height));
+    const c = document.createElement('canvas');
+    c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    if (bmp.close) bmp.close();
+    const out = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.95));
+    if (out) return new File([out], asas + '.jpg', { type: 'image/jpeg', lastModified: Date.now() });
+  } catch (e) { console.warn(e); }
+  return new File([blob], asas + '.jpg', { type: blob.type || 'image/jpeg', lastModified: Date.now() });
+}
+// iPhone: menu Share → "Save Image" terus ke Photos. Android: simpan ke telefon, muncul dalam Gallery.
+async function simpanKeGaleri(files) {
+  if (ios && navigator.canShare && navigator.canShare({ files })) {
+    try { await navigator.share({ files }); return 'kongsi'; }
+    catch (e) { if (e.name === 'AbortError') return 'batal'; }
+  }
+  for (const f of files) {
+    const u = URL.createObjectURL(f); muatTurunFail(u, f.name);
+    await new Promise(r => setTimeout(r, 500)); setTimeout(() => URL.revokeObjectURL(u), 10000);
+  }
+  return 'muat';
+}
+function mesejSimpan(cara, n) {
+  if (cara === 'kongsi') return toast('Pilih "Save Image" untuk simpan ke Photos.');
+  if (cara === 'muat') return toast(n > 1 ? n + ' gambar disimpan ke galeri.' : 'Disimpan ke galeri.');
+}
 $('btnSemua').onclick = async () => {
   const list = senaraiTapis();
   if (!list.length || $('btnSemua').disabled) return;
@@ -628,18 +659,12 @@ $('btnSemua').onclick = async () => {
   const fail = [];
   try {
     for (let i = 0; i < list.length; i++) {
-      $('lblSemua').textContent = `Memuat ${i + 1} / ${list.length}…`;
+      $('lblSemua').textContent = `Menyediakan ${i + 1} / ${list.length}…`;
       const f = await ambilBlob(list[i].id);
-      fail.push(new File([f.blob], f.nama, { type: f.blob.type }));
+      fail.push(await salinanBaru(f.blob, f.nama));
     }
-    if (navigator.canShare && navigator.canShare({ files: fail })) {
-      $('lblSemua').textContent = 'Simpan ke galeri…';
-      try { await navigator.share({ files: fail, title: 'SMKRP Memories' }); }
-      catch (e) { if (e.name !== 'AbortError') throw e; }
-    } else {
-      for (const f of fail) { const u = URL.createObjectURL(f); muatTurunFail(u, f.name); await new Promise(r => setTimeout(r, 400)); setTimeout(() => URL.revokeObjectURL(u), 5000); }
-      toast(fail.length + ' gambar dimuat turun.');
-    }
+    $('lblSemua').textContent = 'Menyimpan…';
+    mesejSimpan(await simpanKeGaleri(fail), fail.length);
   } catch (e) { toast('Gagal: ' + e.message); }
   $('btnSemua').disabled = false; $('lblSemua').textContent = 'Muat turun semua';
 };
@@ -692,9 +717,11 @@ $('pentas').addEventListener('touchend', e => {
 $('lImg').ondblclick = () => { lZoom = !lZoom; $('lImg').style.transform = lZoom ? 'scale(2)' : ''; $('lKotak').classList.toggle('hide', lZoom); };
 $('lMuatTurun').onclick = async () => {
   const x = paparan[lIdx]; if (!x || $('lMuatTurun').disabled) return;
-  $('lMuatTurun').disabled = true; toast('Memuat turun kualiti penuh…');
-  try { const g = await api('penuh', { id: x.id }); muatTurunFail(g.data, g.nama); toast('Dimuat turun (kualiti asal).'); }
-  catch (e) { toast('Gagal: ' + e.message); }
+  $('lMuatTurun').disabled = true; toast('Menyediakan gambar kualiti penuh…');
+  try {
+    const g = await ambilBlob(x.id);
+    mesejSimpan(await simpanKeGaleri([await salinanBaru(g.blob, g.nama)]), 1);
+  } catch (e) { toast('Gagal: ' + e.message); }
   $('lMuatTurun').disabled = false;
 };
 $('lKongsi').onclick = async () => {
