@@ -329,6 +329,8 @@ function toast(m) { const t = $('toast'); t.textContent = m; t.classList.remove(
 const kemasOffline = () => $('offline').classList.toggle('hide', navigator.onLine);
 addEventListener('online', kemasOffline); addEventListener('offline', kemasOffline); kemasOffline();
 
+let dalamBingkai = false; try { dalamBingkai = window.self !== window.top; } catch (e) { dalamBingkai = true; }
+
 /* ---------- Navigasi ---------- */
 const VIEWS = { '': 'vUtama', '#saya': 'vSaya', '#tentang': 'vTentang', '#admin': 'vAdmin' };
 function route() {
@@ -413,7 +415,12 @@ async function mulaSelfie() {
   if (location.hash) location.hash = '';
   try {
     stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: false });
-  } catch (e) { $('errUtama').textContent = 'Kamera tidak dapat dibuka. Benarkan akses kamera dalam tetapan browser.'; return; }
+  } catch (e) {
+    if (dalamBingkai) {
+      $('errUtama').innerHTML = 'Kamera disekat dalam halaman ini.<br><a class="btn kuning" style="margin-top:10px" href="' + location.href.split('#')[0] + '" target="_blank" rel="noopener">Buka app penuh untuk selfie</a>';
+    } else $('errUtama').textContent = 'Kamera tidak dapat dibuka. Benarkan akses kamera dalam tetapan browser.';
+    return;
+  }
   $('kamera').classList.remove('hide');
   const v = $('video'); v.srcObject = stream; await v.play();
   running = true;
@@ -755,13 +762,14 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catc
 const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const android = /android/i.test(navigator.userAgent);
-if (standalone) $('kadPasang').classList.add('hide');
+if (standalone || dalamBingkai) $('kadPasang').classList.add('hide');
+if (dalamBingkai) $('btnPasangAtas').style.visibility = 'hidden';
 else {
   if (ios) $('caraAndroid').classList.add('hide'); else if (android) $('caraIos').classList.add('hide');
-  if (ios || android) $('btnPasangAtas').classList.remove('hide');
+  if ((ios || android) && !dalamBingkai) $('btnPasangAtas').classList.remove('hide');
 }
 let promptPasang = null;
-addEventListener('beforeinstallprompt', e => { e.preventDefault(); promptPasang = e; $('btnPasang').classList.remove('hide'); $('btnPasangAtas').classList.remove('hide'); });
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); if (dalamBingkai) return; promptPasang = e; $('btnPasang').classList.remove('hide'); $('btnPasangAtas').classList.remove('hide'); });
 async function pasang() {
   if (!promptPasang) { location.hash = '#tentang'; setTimeout(() => $('kadPasang').scrollIntoView({ behavior: 'smooth' }), 80); return; }
   promptPasang.prompt();
