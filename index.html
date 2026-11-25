@@ -134,6 +134,15 @@ input[type=text],input[type=password]{min-height:46px;padding:0 12px;border-radi
 .modal{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center}
 .modal.on{display:flex}
 .modal .sheet{background:#fff;width:100%;max-width:560px;border-radius:22px 22px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom))}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:#eef1f8;border-radius:12px;padding:4px;margin:12px 0 14px}
+.tabs button{min-height:40px;border:0;border-radius:9px;background:transparent;font:600 14px Inter;color:var(--mut);cursor:pointer}
+.tabs button.on{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.lk{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid #eef1f7}
+.lk:first-child{border-top:0}
+.lk .no{flex:none;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;font:600 13px Inter;display:flex;align-items:center;justify-content:center}
+.lk .gb{flex:none;width:44px;height:44px;border-radius:12px;background:#f1f3f9;color:var(--navy);display:flex;align-items:center;justify-content:center}
+.lk p{margin:0;font-size:15px}.lk small{display:block;color:var(--mut);font-size:13px}
+.sheet .tutup{float:right}
 .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:50;background:var(--navy);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;max-width:90vw;text-align:center}
 .offline{background:#fde8e8;color:#7f1d1d;text-align:center;font-size:13px;padding:8px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -144,7 +153,7 @@ input[type=text],input[type=password]{min-height:46px;padding:0 12px;border-radi
 <header class="topbar">
   <img src="logo.png" alt="Logo SMK Rantau Panjang">
   <div class="nama">SMKRP <span>Memories</span></div>
-  <button id="btnPasangAtas" class="pil hide">Pasang</button>
+  <button id="btnPasangAtas" class="pil">Pasang</button>
 </header>
 
 <main class="wrap">
@@ -217,12 +226,8 @@ input[type=text],input[type=password]{min-height:46px;padding:0 12px;border-radi
     </div>
     <div id="kadPasang" class="card">
       <h2 style="margin-bottom:6px">Pasang app di telefon</h2>
-      <button id="btnPasang" class="btn kuning penuh hide" style="margin:6px 0 10px">Pasang app sekarang</button>
-      <div id="caraAndroid"><b>Android (Chrome)</b>
-        <ol><li>Tekan menu <span class="ikonT">⋮</span> di kanan atas</li><li>Pilih <b>Add to Home screen</b> / <b>Install app</b></li><li>Tekan <b>Install</b></li></ol></div>
-      <div id="caraIos" style="margin-top:10px"><b>iPhone / iPad (Safari)</b>
-        <ol><li>Buka link ini dalam <b>Safari</b></li><li>Tekan butang <b>Share</b> <span class="ikonT">⬆</span></li><li>Pilih <b>Add to Home Screen</b> → <b>Add</b></li></ol></div>
-      <p class="mut" style="margin:10px 0 0">Buka dari WhatsApp? Pilih <b>Buka dalam browser</b> dahulu.</p>
+      <p class="mut" style="margin:0 0 12px">Pasang sekali, kemudian buka terus dari skrin utama seperti app biasa.</p>
+      <button id="btnCaraPasang" class="btn kuning penuh">Lihat cara pasang</button>
     </div>
     <p style="text-align:center"><a href="#admin" class="mut" style="display:inline-flex;align-items:center;min-height:44px;padding:0 12px">Log masuk admin</a></p>
   </section>
@@ -300,6 +305,31 @@ input[type=text],input[type=password]{min-height:46px;padding:0 12px;border-radi
 </div>
 
 <div id="sah" class="modal"><div class="sheet"><h2 id="sahTajuk">Pasti?</h2><p class="mut" id="sahTeks"></p><div class="row"><button id="sahYa" class="btn merah">Ya</button><button id="sahTidak" class="btn alt">Batal</button></div></div></div>
+<div id="panduan" class="modal" role="dialog" aria-modal="true" aria-labelledby="pTajuk">
+  <div class="sheet" style="max-height:92vh;overflow-y:auto">
+    <button class="bulatKecil tutup" id="pTutup" style="background:#eef1f8;color:var(--navy)" aria-label="Tutup"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
+    <h2 id="pTajuk" style="font-size:22px">Cara pasang app</h2>
+    <p class="mut" style="margin:4px 0 0">Ikon SMKRP Memories akan muncul di skrin utama telefon.</p>
+    <button id="btnPasangTerus" class="btn kuning penuh hide" style="margin-top:14px">Pasang terus sekarang</button>
+    <div class="tabs" role="tablist">
+      <button id="tabAndroid" role="tab">Android</button>
+      <button id="tabIos" role="tab">iPhone / iPad</button>
+    </div>
+    <div id="pAndroid">
+      <div class="lk"><span class="no">1</span><div style="flex:1"><p>Buka link app dalam <b>Google Chrome</b></p><small>Jika dibuka dari WhatsApp, tekan ⋮ dan pilih "Buka dalam Chrome".</small></div><span class="gb"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M12 8.5h8.5M8.97 13.75 4.7 6.4M15.03 13.75 10.8 21"/></svg></span></div>
+      <div class="lk"><span class="no">2</span><div style="flex:1"><p>Tekan menu <b>⋮</b> di penjuru kanan atas</p><small>Tiga titik menegak di sebelah alamat laman.</small></div><span class="gb"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></span></div>
+      <div class="lk"><span class="no">3</span><div style="flex:1"><p>Pilih <b>Add to Home screen</b> atau <b>Install app</b></p><small>Dalam Bahasa Melayu: "Tambah ke skrin utama" / "Pasang apl".</small></div><span class="gb"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 8v6M9 11h6"/></svg></span></div>
+      <div class="lk"><span class="no">4</span><div style="flex:1"><p>Tekan <b>Install</b> / <b>Add</b></p><small>Siap! Buka app dari ikon logo sekolah di skrin utama.</small></div><span class="gb"><img src="icon-192.png" alt="" style="width:32px;height:32px;border-radius:8px"></span></div>
+    </div>
+    <div id="pIos" class="hide">
+      <div class="lk"><span class="no">1</span><div style="flex:1"><p>Buka link app dalam <b>Safari</b></p><small>Chrome dan WhatsApp di iPhone tidak boleh pasang app. Salin link dan tampal dalam Safari.</small></div><span class="gb"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></span></div>
+      <div class="lk"><span class="no">2</span><div style="flex:1"><p>Tekan butang <b>Share</b></p><small>Ikon kotak dengan anak panah ke atas, di bawah skrin (atau di atas pada iPad).</small></div><span class="gb"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M6 11H5v10h14V11h-1"/></svg></span></div>
+      <div class="lk"><span class="no">3</span><div style="flex:1"><p>Skrol ke bawah, pilih <b>Add to Home Screen</b></p><small>Dalam Bahasa Melayu: "Tambah ke Skrin Utama".</small></div><span class="gb"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/></svg></span></div>
+      <div class="lk"><span class="no">4</span><div style="flex:1"><p>Tekan <b>Add</b> di penjuru kanan atas</p><small>Siap! Buka app dari ikon logo sekolah di skrin utama.</small></div><span class="gb"><img src="icon-192.png" alt="" style="width:32px;height:32px;border-radius:8px"></span></div>
+    </div>
+    <button id="pSalin" class="btn alt penuh" style="margin-top:12px">Salin link app</button>
+  </div>
+</div>
 <div id="toast" class="toast hide" role="status"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/dist/face-api.js"></script>
@@ -761,24 +791,34 @@ $('btnHenti').onclick = () => { henti = true; };
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-const android = /android/i.test(navigator.userAgent);
-if (standalone || dalamBingkai) $('kadPasang').classList.add('hide');
-if (dalamBingkai) $('btnPasangAtas').style.visibility = 'hidden';
-else {
-  if (ios) $('caraAndroid').classList.add('hide'); else if (android) $('caraIos').classList.add('hide');
-  if ((ios || android) && !dalamBingkai) $('btnPasangAtas').classList.remove('hide');
-}
+if (standalone) { $('btnPasangAtas').classList.add('hide'); $('kadPasang').classList.add('hide'); }
 let promptPasang = null;
-addEventListener('beforeinstallprompt', e => { e.preventDefault(); if (dalamBingkai) return; promptPasang = e; $('btnPasang').classList.remove('hide'); $('btnPasangAtas').classList.remove('hide'); });
-async function pasang() {
-  if (!promptPasang) { location.hash = '#tentang'; setTimeout(() => $('kadPasang').scrollIntoView({ behavior: 'smooth' }), 80); return; }
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); if (dalamBingkai) return; promptPasang = e; $('btnPasangTerus').classList.remove('hide'); });
+function tabPanduan(t) {
+  $('tabAndroid').classList.toggle('on', t === 'a'); $('tabIos').classList.toggle('on', t === 'i');
+  $('tabAndroid').setAttribute('aria-selected', t === 'a'); $('tabIos').setAttribute('aria-selected', t === 'i');
+  $('pAndroid').classList.toggle('hide', t !== 'a'); $('pIos').classList.toggle('hide', t !== 'i');
+}
+function bukaPanduan() { tabPanduan(ios ? 'i' : 'a'); $('panduan').classList.add('on'); }
+$('btnPasangAtas').onclick = bukaPanduan;
+$('btnCaraPasang').onclick = bukaPanduan;
+$('tabAndroid').onclick = () => tabPanduan('a');
+$('tabIos').onclick = () => tabPanduan('i');
+$('pTutup').onclick = () => $('panduan').classList.remove('on');
+$('panduan').onclick = e => { if (e.target.id === 'panduan') $('panduan').classList.remove('on'); };
+$('btnPasangTerus').onclick = async () => {
+  if (!promptPasang) return;
   promptPasang.prompt();
   const r = await promptPasang.userChoice;
-  promptPasang = null; $('btnPasang').classList.add('hide');
-  if (r.outcome === 'accepted') { $('kadPasang').classList.add('hide'); $('btnPasangAtas').classList.add('hide'); }
-}
-$('btnPasang').onclick = pasang; $('btnPasangAtas').onclick = pasang;
-addEventListener('appinstalled', () => { $('kadPasang').classList.add('hide'); $('btnPasangAtas').classList.add('hide'); });
+  promptPasang = null; $('btnPasangTerus').classList.add('hide');
+  if (r.outcome === 'accepted') { $('panduan').classList.remove('on'); toast('App sedang dipasang di skrin utama.'); }
+};
+$('pSalin').onclick = async () => {
+  const u = 'https://ekwanbiz.github.io/smkrpmemories/';
+  try { await navigator.clipboard.writeText(u); toast('Link disalin. Tampal dalam Safari / Chrome.'); }
+  catch (e) { toast(u); }
+};
+addEventListener('appinstalled', () => { $('btnPasangAtas').classList.add('hide'); $('kadPasang').classList.add('hide'); });
 
 /* ================= MULA ================= */
 (async () => {
