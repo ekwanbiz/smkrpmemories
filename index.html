@@ -62,22 +62,26 @@ nav.bawah a i{display:flex;padding:4px 18px;border-radius:999px}
 nav.bawah a.on{color:var(--navy);font-weight:600}
 nav.bawah a.on i{background:var(--kuning2)}
 
-/* Selfie */
-.kamera{position:fixed;inset:0;z-index:20;background:#05070f;color:#fff;display:flex;flex-direction:column;align-items:center;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+/* Selfie (gaya Face ID) */
+.kamera{position:fixed;inset:0;z-index:20;background:#05070f;color:#fff;display:flex;flex-direction:column;align-items:center;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);overflow-y:auto}
 .kamera .atas{align-self:stretch;display:flex;align-items:center;gap:10px;padding:14px 16px}
 .bulatKecil{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
-.arahan{position:absolute;left:0;right:0;bottom:0;padding:18px 14px;background:rgba(0,0,0,.72);text-align:center;font:600 20px/1.25 Outfit;z-index:2}
-.cam{position:relative;flex:1;width:calc(100% - 32px);max-width:480px;max-height:620px;border-radius:28px;overflow:hidden;background:#000;border:5px solid var(--kuning);transition:border-color .2s}
-.cam .oval{position:absolute;inset:12% 16%;border:3px dashed rgba(255,255,255,.75);border-radius:50%}
-.cam.ok{border-color:#22c55e}.cam.tunggu{border-color:var(--kuning)}.cam.kosong{border-color:#3a4560}
-.cam video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
-.kemajuan{width:calc(100% - 32px);max-width:480px;height:8px;border-radius:4px;background:#26304a;overflow:hidden;margin-top:16px}
-.kemajuan div{height:100%;width:0;background:var(--kuning);transition:width .15s}
-.steps{display:flex;gap:6px;justify-content:center;padding:14px 0 6px}
-.steps i{width:44px;height:7px;border-radius:4px;background:#33405e}
-.steps i.done{background:#22c55e}.steps i.now{background:var(--kuning)}
-.tips{color:#aab3c8;font-size:13px;text-align:center;padding:8px 32px 0;max-width:360px}
-.gagalBox{display:flex;flex-direction:column;gap:10px;align-items:stretch;width:min(86vw,320px);margin-top:16px}
+.cincin{position:relative;width:min(84vw,380px);aspect-ratio:1;margin-top:8px}
+.cincin video{position:absolute;inset:14px;width:calc(100% - 28px);height:calc(100% - 28px);border-radius:50%;object-fit:cover;transform:scaleX(-1);background:#000}
+.cincin svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.cincin .jejak{fill:none;stroke:#26304a;stroke-width:2.4}
+.cincin .isi{fill:none;stroke:var(--kuning);stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset .25s,stroke .25s}
+.cincin.ok .isi{stroke:#22c55e}
+.cincin .tanda{position:absolute;inset:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(34,197,94,.35);opacity:0;transition:opacity .3s}
+.cincin.ok .tanda{opacity:1}
+.arahan{min-height:76px;padding:22px 24px 6px;text-align:center;font:600 24px/1.25 Outfit;display:flex;align-items:center;justify-content:center}
+.subArahan{color:#aab3c8;font-size:14px;text-align:center;padding:0 32px;min-height:22px}
+.mata{display:flex;gap:6px;justify-content:center;margin-top:14px}
+.mata i{width:10px;height:10px;border-radius:50%;background:#33405e}
+.mata i.on{background:var(--kuning)}
+.gagalBox{display:flex;flex-direction:column;gap:10px;align-items:stretch;width:min(86vw,320px);margin:18px 0 24px}
+@media (prefers-reduced-motion:no-preference){.cincin.tunggu .isi{animation:denyut 1.4s ease-in-out infinite}}
+@keyframes denyut{50%{opacity:.55}}
 
 /* Gambar Saya */
 .kepala{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:18px 16px 8px}
@@ -180,7 +184,7 @@ input[type=text],input[type=password]{min-height:46px;padding:0 12px;border-radi
           <em id="lblMula" style="font-style:normal">Memuatkan…</em>
         </span>
       </button>
-      <div class="mut" style="text-align:center;padding:0 40px;margin-top:14px;font-size:13px">Pandang kamera &amp; ikut 2 arahan. Selfie tidak disimpan.</div>
+      <div class="mut" style="text-align:center;padding:0 40px;margin-top:14px;font-size:13px">Pandang kamera &amp; kelip mata. Selfie tidak disimpan.</div>
       <div id="errUtama" class="err"></div>
     </div>
     <div class="stats" id="stats"></div>
@@ -290,13 +294,16 @@ input[type=text],input[type=password]{min-height:46px;padding:0 12px;border-radi
 <div id="kamera" class="kamera hide" role="dialog" aria-label="Selfie live">
   <div class="atas">
     <button id="btnBatal" class="bulatKecil" aria-label="Tutup"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
-    <div style="flex:1;text-align:center;font:600 17px Outfit">Selfie live</div>
+    <div style="flex:1;text-align:center;font:600 17px Outfit">Selfie</div>
     <div style="width:44px"></div>
   </div>
-  <div class="cam" id="camBox"><video id="video" playsinline muted></video><div class="oval"></div><div id="camMsg" class="arahan" aria-live="polite">Menghidupkan kamera…</div></div>
-  <div class="kemajuan"><div id="camBar"></div></div>
-  <div id="steps" class="steps"></div>
-  <div class="tips" id="camTips">Pegang telefon pada paras mata, sejauh lengan. Pastikan muka cukup terang.</div>
+  <div class="cincin" id="cincin">
+    <video id="video" playsinline muted></video>
+    <svg viewBox="0 0 100 100" aria-hidden="true"><circle class="jejak" cx="50" cy="50" r="46" stroke-width="2.2"/><circle id="cincinIsi" class="isi" cx="50" cy="50" r="46" stroke-width="2.6" stroke-dasharray="289" stroke-dashoffset="289"/></svg>
+    <div class="tanda"><svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg></div>
+  </div>
+  <div id="camMsg" class="arahan" aria-live="polite">Menyediakan kamera…</div>
+  <div id="camSub" class="subArahan">Pegang telefon pada paras mata</div>
   <div id="gagalBox" class="gagalBox hide">
     <button id="btnCubaLagi" class="btn kuning">Cuba lagi</button>
     <button id="btnTutupKamera" class="btn alt" style="background:transparent;color:#fff;border-color:#3a4560">Tutup</button>
@@ -412,10 +419,8 @@ async function muatModel() {
   await faceapi.tf.ready();
   await Promise.all([
     faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL),
-    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL),
     faceapi.nets.faceLandmark68Net.loadFromUri(MODEL),
-    faceapi.nets.faceRecognitionNet.loadFromUri(MODEL),
-    faceapi.nets.faceExpressionNet.loadFromUri(MODEL)
+    faceapi.nets.faceRecognitionNet.loadFromUri(MODEL)
   ]);
   modelSedia = true;
 }
@@ -429,60 +434,55 @@ function kuantum(desc) {
 }
 const dist = (a, b) => { let s = 0; for (let i = 0; i < 128; i++) { const d = a[i] - b[i]; s += d * d; } return Math.sqrt(s); };
 
-/* ================= SELFIE LIVE ================= */
-let stream = null, running = false;
-const say = t => { $('camMsg').textContent = t; };
-const bar = p => { $('camBar').style.width = Math.max(0, Math.min(100, p)) + '%'; };
-const bingkai = k => { $('camBox').className = 'cam ' + (k || 'kosong'); };
-function yaw(lm) { // nilai mutlak = berapa banyak kepala dipusing ke tepi
-  const p = lm.positions, le = p[36], re = p[45], n = p[30];
-  return (n.x - (le.x + re.x) / 2) / Math.hypot(re.x - le.x, re.y - le.y);
+/* ================= SELFIE LIVE (MediaPipe + kelip mata) ================= */
+const MP_VER = '1.2.2';
+const MP_MODEL = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
+let stream = null, running = false, landmarker = null, landmarkerJanji = null;
+const say = (t, sub) => { $('camMsg').textContent = t; if (sub !== undefined) $('camSub').textContent = sub; };
+const KELILING = 289;
+function cincin(p, keadaan) {
+  $('cincinIsi').style.strokeDashoffset = KELILING * (1 - Math.max(0, Math.min(1, p)));
+  $('cincin').className = 'cincin' + (keadaan ? ' ' + keadaan : '');
 }
-// Ambil muka paling besar (abaikan muka kecil di belakang)
-async function frame() {
-  const fs = await faceapi.detectAllFaces($('video'), new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.4 })).withFaceLandmarks().withFaceExpressions();
-  if (!fs.length) return { f: null, ramai: false };
-  fs.sort((a, b) => b.detection.box.area - a.detection.box.area);
-  const ramai = fs.length > 1 && fs[1].detection.box.area > fs[0].detection.box.area * 0.45;
-  return { f: fs[0], ramai };
+const getar = ms => { try { navigator.vibrate && navigator.vibrate(ms); } catch (e) {} };
+
+function sediaLandmarker() {
+  if (landmarker) return Promise.resolve(landmarker);
+  if (landmarkerJanji) return landmarkerJanji;
+  landmarkerJanji = (async () => {
+    const v = await import(`https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MP_VER}/vision_bundle.mjs`);
+    const files = await v.FilesetResolver.forVisionTasks(`https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MP_VER}/wasm`);
+    const buat = delegate => v.FaceLandmarker.createFromOptions(files, {
+      baseOptions: { modelAssetPath: MP_MODEL, delegate },
+      runningMode: 'VIDEO', numFaces: 2, outputFaceBlendshapes: true
+    });
+    try { landmarker = await buat('GPU'); } catch (e) { landmarker = await buat('CPU'); }
+    return landmarker;
+  })();
+  landmarkerJanji.catch(() => { landmarkerJanji = null; });
+  return landmarkerJanji;
 }
-async function rakamDepan(tajuk) {
-  let good = 0; const end = Date.now() + 20000;
-  while (running && Date.now() < end) {
-    const { f, ramai } = await frame();
-    if (ramai) { say('Hanya SATU muka dalam kamera'); bingkai(''); good = 0; bar(0); continue; }
-    if (!f) { say('Letakkan muka dalam bingkai'); bingkai(''); good = 0; bar(0); continue; }
-    if (Math.abs(yaw(f.landmarks)) > 0.2) { say('Pandang terus ke kamera'); bingkai('tunggu'); good = Math.max(0, good - 1); bar(good * 33); continue; }
-    say(tajuk); bingkai('ok'); bar(++good * 33);
-    if (good >= 3) {
-      const d = await faceapi.detectSingleFace($('video'), new faceapi.SsdMobilenetv1Options({ minConfidence: 0.4 })).withFaceLandmarks().withFaceDescriptor();
-      if (d) { bar(100); return d.descriptor; }
-      good = 1;
-    }
-  }
-  return null;
+
+// Ukur kedudukan muka daripada titik-titik muka (0..1)
+function ukurMuka(lm) {
+  let x0 = 1, x1 = 0, y0 = 1, y1 = 0;
+  for (const p of lm) { if (p.x < x0) x0 = p.x; if (p.x > x1) x1 = p.x; if (p.y < y0) y0 = p.y; if (p.y > y1) y1 = p.y; }
+  const hidung = lm[1], kiri = lm[234], kanan = lm[454];
+  const a = Math.min(kiri.x, kanan.x), b = Math.max(kiri.x, kanan.x);
+  const yaw = (hidung.x - a) / Math.max(1e-6, b - a) - 0.5;  // 0 = pandang depan
+  return { lebar: x1 - x0, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, yaw };
 }
-const CABARAN = {
-  pusing: { t: 'Pusing kepala sedikit ke kiri atau kanan', ok: f => Math.abs(yaw(f.landmarks)) > 0.17 },
-  senyum: { t: 'Senyum lebar', ok: f => f.expressions.happy > 0.6 }
-};
-async function cabaran(c) {
-  const end = Date.now() + 15000; let hits = 0;
-  say(c.t); bingkai('tunggu'); bar(0);
-  while (running && Date.now() < end) {
-    const { f, ramai } = await frame();
-    if (ramai || !f) { hits = 0; bar(0); continue; }
-    if (c.ok(f)) { hits++; bingkai('ok'); bar(hits * 50); if (hits >= 2) return true; }
-    else { hits = 0; bingkai('tunggu'); bar(0); }
-  }
-  return false;
+const skor = (bs, nama) => { const c = bs && bs.categories.find(k => k.categoryName === nama); return c ? c.score : 0; };
+
+async function capJari() {
+  const d = await faceapi.detectSingleFace($('video'), new faceapi.SsdMobilenetv1Options({ minConfidence: 0.4 })).withFaceLandmarks().withFaceDescriptor();
+  return d ? d.descriptor : null;
 }
-const setSteps = (n, cur) => { $('steps').innerHTML = Array.from({ length: n }, (_, i) => `<i class="${i < cur ? 'done' : i === cur ? 'now' : ''}"></i>`).join(''); };
 
 async function bukaKamera() {
   if (stream) return true;
   try {
-    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: false });
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 640 } }, audio: false });
   } catch (e) {
     if (dalamBingkai) {
       $('errUtama').innerHTML = 'Kamera disekat dalam halaman ini.<br><a class="btn kuning" style="margin-top:10px" href="' + location.href.split('#')[0] + '" target="_blank" rel="noopener">Buka app penuh untuk selfie</a>';
@@ -492,33 +492,80 @@ async function bukaKamera() {
   const v = $('video'); v.srcObject = stream; await v.play();
   return true;
 }
+
 async function mulaSelfie() {
   $('errUtama').textContent = '';
   if (location.hash) location.hash = '';
-  if (!(await bukaKamera())) return;
-  $('kamera').classList.remove('hide'); $('gagalBox').classList.add('hide'); $('camTips').classList.remove('hide');
+  $('kamera').classList.remove('hide'); $('gagalBox').classList.add('hide');
+  cincin(0, ''); say('Menyediakan kamera…', 'Kali pertama mungkin ambil beberapa saat');
+  if (!(await bukaKamera())) { $('kamera').classList.add('hide'); return; }
+  try { await sediaLandmarker(); }
+  catch (e) { return gagal('Pengesan muka gagal dimuatkan. Semak internet dan cuba lagi.'); }
   running = true;
-  const urutan = Object.keys(CABARAN).sort(() => Math.random() - 0.5).slice(0, 2);
-  const n = urutan.length + 2;
-  setSteps(n, 0);
-  const d1 = await rakamDepan('Bagus! Tahan sekejap…');
-  if (!running) return;
-  if (!d1) return gagal('Muka tidak dapat dirakam. Cuba di tempat lebih terang.');
-  for (let i = 0; i < urutan.length; i++) {
-    setSteps(n, i + 1);
-    if (!(await cabaran(CABARAN[urutan[i]]))) return running ? gagal('Arahan tidak dapat dikesan. Cuba lagi, buat perlahan-lahan.') : null;
-  }
-  setSteps(n, n - 1);
-  const d2 = await rakamDepan('Pandang depan semula… tahan');
-  if (!running) return;
-  if (!d2) return gagal('Muka tidak dapat dirakam. Cuba lagi.');
-  if (dist(d1, d2) > 0.5) return gagal('Muka berubah semasa ujian. Pastikan hanya anda dalam kamera.');
-  setSteps(n, n); say('Berjaya! Mencari gambar…'); bingkai('ok');
-  const me = new Float32Array(128); for (let i = 0; i < 128; i++) me[i] = (d1[i] + d2[i]) / 2;
-  tutupKamera();
-  await cari(kuantum(me));
+  jalanSelfie().catch(e => { console.warn(e); if (running) gagal('Ralat kamera. Cuba lagi.'); });
 }
-function gagal(m) { running = false; say(m); bingkai(''); bar(0); $('gagalBox').classList.remove('hide'); $('camTips').classList.add('hide'); }
+
+async function jalanSelfie() {
+  const v = $('video');
+  const mula = Date.now();
+  let tahap = 'posisi', stabil = 0, d1 = null, mataTutup = false, bukaLepas = 0, akhirT = -1;
+  while (running) {
+    if (Date.now() - mula > 30000) return gagal('Masa tamat. Cuba di tempat lebih terang.');
+    await new Promise(r => requestAnimationFrame(r));
+    if (v.readyState < 2 || v.currentTime === akhirT) continue;
+    akhirT = v.currentTime;
+    const r = landmarker.detectForVideo(v, performance.now());
+    const muka = r.faceLandmarks || [];
+    if (!muka.length) { say('Letakkan muka dalam bulatan', 'Pastikan muka cukup terang'); stabil = 0; cincin(tahap === 'kelip' ? 0.5 : 0, ''); continue; }
+    const m = ukurMuka(muka[0]);
+    if (muka.length > 1 && ukurMuka(muka[1]).lebar > m.lebar * 0.6) { say('Hanya satu muka sahaja', 'Pastikan tiada orang lain di belakang'); stabil = 0; continue; }
+    let masalah = '';
+    if (m.lebar < 0.22) masalah = 'Dekatkan sedikit';
+    else if (m.lebar > 0.85) masalah = 'Jauhkan sedikit';
+    else if (Math.abs(m.cx - 0.5) > 0.16 || Math.abs(m.cy - 0.5) > 0.18) masalah = 'Letakkan muka di tengah bulatan';
+    else if (Math.abs(m.yaw) > 0.12) masalah = 'Pandang terus ke kamera';
+    const bs = (r.faceBlendshapes || [])[0];
+    const kelip = Math.max(skor(bs, 'eyeBlinkLeft'), skor(bs, 'eyeBlinkRight'));
+    const kelipMin = Math.min(skor(bs, 'eyeBlinkLeft'), skor(bs, 'eyeBlinkRight'));
+
+    if (tahap === 'posisi') {
+      if (masalah) { say(masalah, ''); stabil = Math.max(0, stabil - 2); cincin(stabil / 24 * 0.5, 'tunggu'); continue; }
+      if (kelip > 0.45) continue;                       // tunggu mata terbuka
+      stabil++; say('Bagus! Tahan sekejap…', ''); cincin(Math.min(0.5, stabil / 24 * 0.5), 'tunggu');
+      if (stabil >= 12) {
+        say('Bagus! Tahan sekejap…', '');
+        d1 = await capJari();
+        if (!running) return;
+        if (!d1) { stabil = 6; continue; }
+        tahap = 'kelip'; cincin(0.5, 'tunggu'); getar(20);
+        say('Sekarang, kelip mata', 'Tutup dan buka mata sekali');
+      }
+      continue;
+    }
+
+    if (tahap === 'kelip') {
+      if (masalah && !mataTutup) { say(masalah, 'Kemudian kelip mata'); continue; }
+      if (!mataTutup && kelipMin > 0.5) { mataTutup = true; cincin(0.75, 'tunggu'); }
+      else if (mataTutup && kelip < 0.25) {
+        bukaLepas++;
+        if (bukaLepas >= 3) {
+          cincin(0.9, 'tunggu'); say('Hebat! Sedang mengesahkan…', '');
+          const d2 = await capJari();
+          if (!running) return;
+          if (!d2) { mataTutup = false; bukaLepas = 0; say('Sekali lagi, kelip mata', 'Pandang terus ke kamera'); continue; }
+          if (dist(d1, d2) > 0.5) return gagal('Muka berubah semasa selfie. Pastikan hanya anda dalam kamera.');
+          cincin(1, 'ok'); getar([30, 60, 30]); say('Berjaya!', 'Mencari gambar anda…');
+          const me = new Float32Array(128); for (let i = 0; i < 128; i++) me[i] = (d1[i] + d2[i]) / 2;
+          await new Promise(r => setTimeout(r, 600));
+          tutupKamera();
+          return cari(kuantum(me));
+        }
+      }
+    }
+  }
+}
+
+function gagal(m) { running = false; say(m, ''); cincin(0, ''); $('gagalBox').classList.remove('hide'); getar(120); }
 function tutupKamera() {
   running = false;
   if (stream) stream.getTracks().forEach(t => t.stop());
@@ -528,7 +575,9 @@ $('btnMula').onclick = () => { if (!running) mulaSelfie(); };
 $('btnSelfieSemula').onclick = () => { location.hash = ''; setTimeout(() => $('btnMula').click(), 50); };
 $('btnBatal').onclick = tutupKamera;
 $('btnTutupKamera').onclick = tutupKamera;
-$('btnCubaLagi').onclick = () => { if (!running) mulaSelfie(); };
+$('btnCubaLagi').onclick = () => { if (!running) { tutupKamera(); mulaSelfie(); } };
+// Pramuat pengesan muka sebaik app dibuka (supaya kamera terus laju)
+setTimeout(() => sediaLandmarker().catch(() => {}), 1500);
 
 /* ================= GAMBAR SAYA ================= */
 let saya = baca('smkrp_saya', null);          // { masa, hasil:[{id,d,box,nama,majlis}] }

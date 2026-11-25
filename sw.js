@@ -1,5 +1,5 @@
 // SMKRP MEMORIES service worker
-const CACHE = 'smkrp-v2';
+const CACHE = 'smkrp-v3';
 const SHELL = ['./', './index.html', './logo.png', './icon-192.png', './icon-512.png', './manifest.json'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL))); self.skipWaiting(); });
 self.addEventListener('activate', e => {
@@ -11,7 +11,7 @@ self.addEventListener('fetch', e => {
   if (r.method !== 'GET') return;
   const u = new URL(r.url);
   // Model muka & library: simpan dalam telefon supaya buka seterusnya lebih laju
-  if (u.hostname === 'cdn.jsdelivr.net') {
+  if (u.hostname === 'cdn.jsdelivr.net' || (u.hostname === 'storage.googleapis.com' && u.pathname.startsWith('/mediapipe-models/'))) {
     e.respondWith(caches.open('smkrp-model').then(c => c.match(r).then(hit => hit || fetch(r).then(res => { if (res.ok) c.put(r, res.clone()); return res; }))));
     return;
   }
