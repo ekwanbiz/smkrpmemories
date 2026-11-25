@@ -148,6 +148,11 @@ input[type=text],input[type=password]{min-height:46px;padding:0 12px;border-radi
 .lk .gb{flex:none;width:44px;height:44px;border-radius:12px;background:#f1f3f9;color:var(--navy);display:flex;align-items:center;justify-content:center}
 .lk p{margin:0;font-size:15px}.lk small{display:block;color:var(--mut);font-size:13px}
 .sheet .tutup{float:right}
+.muatBox{margin:0 16px 10px;padding:12px 14px;background:#fff;border:1px solid var(--line);border-radius:14px}
+.muatBox .row{justify-content:space-between;font-size:14px}
+.muatBox b{color:var(--navy);font-weight:600}
+.muatBox .bar{height:8px;margin:8px 0 0}
+.muatBox .bar div{background:linear-gradient(90deg,var(--navy),#3a52b8);transition:width .35s}
 .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:50;background:var(--navy);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;max-width:90vw;text-align:center}
 .offline{background:#fde8e8;color:#7f1d1d;text-align:center;font-size:13px;padding:8px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -194,6 +199,10 @@ input[type=text],input[type=password]{min-height:46px;padding:0 12px;border-radi
       </button>
     </div>
     <div id="sayaAda">
+      <div id="muatBox" class="muatBox hide" role="status" aria-live="polite">
+        <div class="row"><b id="muatTeks">Mengumpul kenangan anda…</b><span class="mut" id="muatKira"></span></div>
+        <div class="bar"><div id="muatBar"></div></div>
+      </div>
       <div class="chips" id="chips"></div>
       <details class="padanan"><summary>Laraskan ketepatan padanan</summary>
         <div class="row" style="padding:4px 0 8px">Ketat <input id="thr" type="range" min="0.38" max="0.62" step="0.01" value="0.50" aria-label="Ketepatan padanan"> Longgar</div>
@@ -591,10 +600,31 @@ function pasangThumb() {
   });
   muatThumb(paparan.map(x => x.id).filter(id => !thumbCache.has(id)));
 }
-let thumbJalan = false;
+let thumbJalan = false, muatTutup = null;
+function kemasMuat() {
+  const ids = paparan.map(x => x.id);
+  const total = ids.length, siap = ids.filter(id => thumbCache.has(id)).length;
+  const box = $('muatBox');
+  if (!total) { box.classList.add('hide'); return; }
+  if (siap >= total) {
+    if (box.classList.contains('hide')) return;
+    $('muatTeks').textContent = 'Semua gambar sedia. Selamat mengimbau kenangan!';
+    $('muatKira').textContent = total + ' / ' + total; $('muatBar').style.width = '100%';
+    clearTimeout(muatTutup); muatTutup = setTimeout(() => box.classList.add('hide'), 1800);
+    return;
+  }
+  clearTimeout(muatTutup);
+  const pct = Math.round(100 * siap / total);
+  box.classList.remove('hide');
+  $('muatTeks').textContent = pct < 30 ? 'Mengumpul kenangan anda…' : pct < 70 ? 'Menyusun gambar mengikut majlis…' : 'Hampir siap, sedikit lagi…';
+  $('muatKira').textContent = siap + ' / ' + total;
+  $('muatBar').style.width = Math.max(4, pct) + '%';
+}
 async function muatThumb(ids) {
+  kemasMuat();
   if (thumbJalan || !ids.length) return;
   thumbJalan = true;
+  let ralat = false;
   try {
     for (let i = 0; i < ids.length; i += 12) {
       const part = ids.slice(i, i + 12);
@@ -605,9 +635,15 @@ async function muatThumb(ids) {
           if (urls[k]) { im.src = urls[k]; im.classList.add('siap'); im.parentElement.classList.add('ada'); }
         });
       });
+      kemasMuat();
     }
-  } catch (e) { console.warn(e); }
+  } catch (e) {
+    console.warn(e); ralat = true;
+    $('muatTeks').textContent = 'Sambungan terganggu. Tarik ke bawah atau buka semula untuk cuba lagi.';
+  }
   thumbJalan = false;
+  const baki = paparan.map(x => x.id).filter(id => !thumbCache.has(id));
+  if (baki.length && !ralat) muatThumb(baki);
 }
 $('chips').onclick = e => { const b = e.target.closest('button[data-t]'); if (b) { tapis = b.dataset.t; renderSaya(); } };
 $('thr').oninput = renderSaya;
