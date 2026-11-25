@@ -660,7 +660,11 @@ async function tunjukLihat() {
   $('lMuat').classList.remove('hide');
   try {
     let g = penuhCache.get(x.id);
-    if (!g) { g = await api('penuh', { id: x.id }); penuhCache.set(x.id, g); if (penuhCache.size > 6) penuhCache.delete(penuhCache.keys().next().value); }
+    if (!g) {
+      try { g = await api('sederhana', { id: x.id }); }      // versi ringan ~1600px
+      catch (e) { g = await api('penuh', { id: x.id }); }    // jika Apps Script belum dikemas kini
+      penuhCache.set(x.id, g); if (penuhCache.size > 8) penuhCache.delete(penuhCache.keys().next().value);
+    }
     if (paparan[lIdx] !== x) return;
     lSemasa = g; $('lImg').src = g.data;
     try {
@@ -669,6 +673,8 @@ async function tunjukLihat() {
       $('lKotak').classList.remove('hide');
     } catch (e) {}
     $('lMuat').classList.add('hide');
+    const seterus = paparan[lIdx + 1];
+    if (seterus && !penuhCache.has(seterus.id)) api('sederhana', { id: seterus.id }).then(g => penuhCache.set(seterus.id, g)).catch(() => {});
   } catch (e) { $('lMuat').textContent = 'Ralat: ' + e.message; }
 }
 const gerak = d => { const n = lIdx + d; if (n >= 0 && n < paparan.length) { lIdx = n; tunjukLihat(); } };
@@ -684,7 +690,13 @@ $('pentas').addEventListener('touchend', e => {
   else if (dy > 90 && Math.abs(dy) > Math.abs(dx)) tutupLihat();
 });
 $('lImg').ondblclick = () => { lZoom = !lZoom; $('lImg').style.transform = lZoom ? 'scale(2)' : ''; $('lKotak').classList.toggle('hide', lZoom); };
-$('lMuatTurun').onclick = () => { if (lSemasa) { muatTurunFail(lSemasa.data, lSemasa.nama); toast('Dimuat turun.'); } };
+$('lMuatTurun').onclick = async () => {
+  const x = paparan[lIdx]; if (!x || $('lMuatTurun').disabled) return;
+  $('lMuatTurun').disabled = true; toast('Memuat turun kualiti penuh…');
+  try { const g = await api('penuh', { id: x.id }); muatTurunFail(g.data, g.nama); toast('Dimuat turun (kualiti asal).'); }
+  catch (e) { toast('Gagal: ' + e.message); }
+  $('lMuatTurun').disabled = false;
+};
 $('lKongsi').onclick = async () => {
   if (!lSemasa) return;
   try {
