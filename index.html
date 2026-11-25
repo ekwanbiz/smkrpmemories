@@ -950,7 +950,7 @@ $('btnPasangTerus').onclick = async () => {
   if (r.outcome === 'accepted') { $('panduan').classList.remove('on'); toast('App sedang dipasang di skrin utama.'); }
 };
 $('pSalin').onclick = async () => {
-  const u = 'https://ekwanbiz.github.io/smkrpmemories/';
+  const u = location.origin + location.pathname.replace(/index\.html$/, '');
   try { await navigator.clipboard.writeText(u); toast('Link disalin. Tampal dalam Safari / Chrome.'); }
   catch (e) { toast(u); }
 };
