@@ -2,197 +2,311 @@
 <html lang="ms">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>SMKRP MEMORIES</title>
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="SMKRP Memories">
-<meta name="theme-color" content="#123a8c">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--brand:#123a8c;--acc:#ffc928;--bg:#f4f6fb;--card:#fff;--ink:#111827;--mut:#5b6478;--line:#dde3ef;--ok:#16a34a;--bad:#dc2626}
-*{box-sizing:border-box;min-width:0}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif}
-header{background:var(--brand);color:#fff;padding:28px max(5vw,20px) 64px}
-header .atas{display:flex;align-items:center;gap:14px}
-header .logo{width:clamp(64px,16vw,88px);height:auto;flex:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25))}
-header .kecil{font-size:13px;color:#c9d6f5}
-h1{font:800 clamp(32px,8vw,44px)/1.05 Outfit,sans-serif;margin:4px 0}
-h1 span,.acc{color:var(--acc)}
-h2{font:600 20px Outfit,sans-serif;margin:0 0 10px}
-main{max-width:980px;margin:-40px auto 0;padding:0 16px 48px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:0 8px 24px rgba(18,58,140,.08)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 22px;border-radius:14px;border:0;font:600 16px Inter;cursor:pointer;background:var(--brand);color:#fff;text-decoration:none}
-.btn.alt{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
-.btn.kuning{background:var(--acc);color:#2b2100}
+:root{--navy:#13205c;--kuning:#ffe14d;--kuning2:#fff3b0;--bg:#f5f6fa;--ink:#111827;--mut:#5b6478;--line:#e6e9f2;--ok:#16a34a;--bad:#dc2626}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif}
+body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+body.tanpaNav{padding-bottom:0}
+button{font:inherit}
+.topbar{position:sticky;top:0;z-index:5;height:64px;padding:0 16px;padding-top:env(safe-area-inset-top);box-sizing:content-box;display:flex;align-items:center;gap:10px;background:#fff;border-bottom:1px solid var(--line)}
+.topbar img{width:38px;height:36px;object-fit:contain}
+.topbar .nama{flex:1;font:800 19px Outfit,sans-serif;color:var(--navy)}
+.topbar .nama span{color:#c9a400}
+.pil{min-height:36px;padding:0 14px;border-radius:999px;border:0;background:var(--navy);color:#fff;font:600 13px Inter;cursor:pointer}
+.wrap{max-width:560px;margin:0 auto}
+h1{margin:0;font:800 34px/1.08 Outfit,sans-serif;color:var(--navy)}
+h2{margin:0;font:600 18px Outfit,sans-serif;color:var(--navy)}
+.mut{color:var(--mut);font-size:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 20px;border-radius:14px;border:0;font:600 16px Inter;cursor:pointer;background:var(--navy);color:#fff;text-decoration:none}
+.btn.alt{background:#fff;color:var(--navy);border:1.5px solid #dbe0ec}
+.btn.kuning{background:var(--kuning);color:var(--navy)}
 .btn.merah{background:#fff;color:var(--bad);border:1.5px solid var(--bad)}
 .btn.kecil{min-height:40px;padding:0 14px;font-size:14px}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-.btn:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+button:focus-visible,a:focus-visible{outline:3px solid var(--kuning);outline-offset:2px}
 .penuh{width:100%}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.mut{color:var(--mut);font-size:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;margin:0 16px 14px}
 .nota{background:#fff7dc;border:1px solid #f3dc8a;color:#5c4400;border-radius:12px;padding:12px 14px;font-size:14px}
-.langkah{display:flex;gap:12px;align-items:flex-start;margin:8px 0}
-.langkah b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center}
-.cam{position:relative;aspect-ratio:3/4;max-width:420px;margin:0 auto;border-radius:24px;overflow:hidden;background:#000;border:6px solid var(--acc)}
+.err{color:var(--bad);font-size:14px;margin-top:8px;text-align:center}
+.hide{display:none!important}
+
+/* Utama */
+.hero{padding:28px 24px 0}
+.selfieBtn{display:flex;flex-direction:column;align-items:center;gap:12px;padding:36px 0 12px}
+.bulat{width:196px;height:196px;border-radius:50%;border:0;background:var(--kuning);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 14px #fff6c2,0 18px 40px rgba(19,32,92,.22);cursor:pointer;padding:0}
+.bulat span{width:152px;height:152px;border-radius:50%;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#fff;font:600 15px Inter}
+.bulat:disabled{opacity:.6}
+@media (prefers-reduced-motion:no-preference){.bulat:not(:disabled){animation:nadi 2.4s ease-in-out infinite}}
+@keyframes nadi{50%{box-shadow:0 0 0 22px #fff6c2,0 18px 40px rgba(19,32,92,.22)}}
+.stats{display:flex;gap:10px;padding:18px 16px 0}
+.stat{flex:1;padding:14px;border-radius:16px;background:var(--kuning2)}
+.stat:nth-child(2){background:#dfe6fb}
+.stat b{display:block;font:800 24px Outfit;color:var(--navy)}
+.stat span{font-size:12px;color:#3c4559}
+
+/* Nav bawah */
+nav.bawah{position:fixed;left:0;right:0;bottom:0;z-index:6;height:76px;padding-bottom:env(safe-area-inset-bottom);box-sizing:content-box;background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+nav.bawah a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--mut);font-size:12px;text-decoration:none}
+nav.bawah a i{display:flex;padding:4px 18px;border-radius:999px}
+nav.bawah a.on{color:var(--navy);font-weight:600}
+nav.bawah a.on i{background:var(--kuning2)}
+
+/* Selfie */
+.kamera{position:fixed;inset:0;z-index:20;background:#05070f;color:#fff;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.kamera .atas{display:flex;align-items:center;gap:10px;padding:14px 16px}
+.bulatKecil{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
+.cam{position:relative;flex:1;margin:0 16px;border-radius:28px;overflow:hidden;background:#000;border:5px solid var(--kuning);max-height:620px}
 .cam video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
-.cam .oval{position:absolute;inset:12% 18%;border:3px dashed rgba(255,255,255,.75);border-radius:50%}
-.cam .msg{position:absolute;left:0;right:0;bottom:0;padding:16px;background:rgba(0,0,0,.72);color:#fff;font:600 20px Outfit;text-align:center}
-.steps{display:flex;gap:6px;justify-content:center;margin:12px 0}
-.steps i{width:48px;height:8px;border-radius:4px;background:var(--line)}
-.steps i.done{background:var(--ok)}.steps i.now{background:var(--acc)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin:8px 0 18px}
-.grid button{position:relative;padding:0;border:0;border-radius:12px;overflow:hidden;background:#e6ebf5;aspect-ratio:1;cursor:pointer}
-.grid img{width:100%;height:100%;object-fit:cover;display:block}
-.grid span{position:absolute;right:6px;bottom:6px;padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.9);font-size:11px;font-weight:600;color:var(--brand)}
-.majlis{display:flex;justify-content:space-between;align-items:baseline}
+.cam .oval{position:absolute;inset:12% 16%;border:3px dashed rgba(255,255,255,.75);border-radius:50%}
+.cam .msg{position:absolute;left:0;right:0;bottom:0;padding:18px 14px;background:rgba(0,0,0,.72);font:600 20px Outfit;text-align:center}
+.steps{display:flex;gap:6px;justify-content:center;padding:14px 0 18px}
+.steps i{width:44px;height:7px;border-radius:4px;background:#33405e}
+.steps i.done{background:#22c55e}.steps i.now{background:var(--kuning)}
+
+/* Gambar Saya */
+.kepala{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:18px 16px 8px}
+.kepala h1{font-size:28px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:6px 16px 12px;scrollbar-width:none}
+.chips button{flex:none;min-height:36px;padding:0 14px;border-radius:999px;border:1.5px solid #dbe0ec;background:#fff;color:var(--navy);font:600 13px Inter;cursor:pointer;white-space:nowrap}
+.chips button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.lbl{font:600 13px Inter;color:var(--mut);padding:12px 16px 8px}
+.galeri{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:calc(min(560px,100vw)/3);gap:2px}
+.galeri button{position:relative;padding:0;border:0;overflow:hidden;cursor:pointer;background:#e9ecf4}
+.galeri button.besar{grid-column:span 2;grid-row:span 2}
+.galeri img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .3s}
+.galeri img.siap{opacity:1}
+.galeri .pct{position:absolute;left:8px;bottom:8px;padding:2px 7px;border-radius:6px;background:rgba(255,255,255,.92);font-size:11px;font-weight:600;color:var(--navy)}
+.galeri .hati{position:absolute;right:6px;top:6px;color:#fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+@media (prefers-reduced-motion:no-preference){.galeri button:not(.ada){background:linear-gradient(90deg,#e9ecf4 0,#f6f7fb 50%,#e9ecf4 100%);background-size:200% 100%;animation:kilat 1.2s linear infinite}}
+@keyframes kilat{to{background-position:-200% 0}}
+.fab{position:fixed;right:16px;bottom:calc(96px + env(safe-area-inset-bottom));z-index:4;min-height:52px;padding:0 20px;border-radius:999px;border:0;background:var(--kuning);color:var(--navy);font:600 15px Inter;display:flex;align-items:center;gap:8px;box-shadow:0 10px 24px rgba(19,32,92,.25);cursor:pointer}
+.kosong{text-align:center;padding:48px 24px}
+.kosong .ikon{width:88px;height:88px;border-radius:50%;background:var(--kuning2);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--navy)}
+details.padanan{margin:0 16px 6px;font-size:13px;color:var(--mut)}
+details.padanan summary{cursor:pointer;min-height:32px;display:flex;align-items:center}
+input[type=range]{flex:1;accent-color:var(--navy)}
+
+/* Paparan penuh */
+.lihat{position:fixed;inset:0;z-index:30;background:#05070f;color:#fff;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);touch-action:pan-y}
+.lihat .atas{height:64px;padding:0 12px;display:flex;align-items:center;gap:8px}
+.lihat .tajuk{flex:1;text-align:center}
+.lihat .tajuk b{display:block;font:600 15px Outfit}
+.lihat .tajuk span{font-size:12px;color:#aab3c8}
+.pentas{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.bingkai{position:relative;max-width:100%;max-height:100%}
+.bingkai img{display:block;max-width:100vw;max-height:calc(100vh - 230px);transition:transform .25s}
+.bingkai .kotak{position:absolute;border:3px solid var(--kuning);border-radius:10px}
+.pentas .nav{position:absolute;top:50%;margin-top:-22px}
+.pentas .kiri{left:8px}.pentas .kanan{right:8px}
+.muat{position:absolute;font-size:14px;color:#aab3c8}
+.lihat .petunjuk{text-align:center;font-size:12px;color:#aab3c8;padding:8px 0}
+.aksi{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0 16px 20px}
+.aksi button{min-height:64px;border-radius:16px;border:0;font:600 13px Inter;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer}
+.aksi .k1{background:#1f8f4e;color:#fff}.aksi .k2{background:var(--kuning);color:var(--navy)}.aksi .k3{background:rgba(255,255,255,.12);color:#fff}
+.aksi .k3.on{color:var(--kuning)}
+
+/* Tentang & admin */
+.langkah{display:flex;gap:12px;align-items:flex-start;margin:8px 0}
+.langkah b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center}
+.ikonT{display:inline-flex;vertical-align:middle;padding:1px 6px;border-radius:6px;background:#eef2fb;font-weight:600;font-size:14px}
+ol{margin:6px 0 0;padding-left:22px}li{margin:4px 0}
 label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;margin-bottom:12px}
 input[type=text],input[type=password]{min-height:46px;padding:0 12px;border-radius:10px;border:1.5px solid #cdd5e4;font:16px Inter}
-input[type=range]{flex:1;accent-color:var(--brand)}
-.bar{height:14px;background:#e6ebf5;border-radius:7px;overflow:hidden;margin:10px 0}
-.bar div{height:100%;width:0;background:var(--brand);transition:width .2s}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
-.stat b{display:block;font:800 28px Outfit}
-.scroll{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:14px;min-width:640px}
-th{text-align:left;color:var(--mut);font-size:12px;padding:10px}
-td{padding:12px 10px;border-top:1px solid #eef1f7}
-.chip{padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.bar{height:12px;background:#e6ebf5;border-radius:6px;overflow:hidden;margin:10px 0}
+.bar div{height:100%;width:0;background:var(--navy);transition:width .2s}
+.astat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 16px 14px}
+.astat div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
+.astat b{display:block;font:800 22px Outfit;color:var(--navy)}
+.folder{border-top:1px solid #eef1f7;padding:12px 0}
+.chip{padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
 .chip.aktif{background:#dcf5e4;color:#14532d}.chip.sembunyi{background:#eceff4;color:#3c4559}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;flex-direction:column;padding:16px;z-index:9}
+.modal{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center}
 .modal.on{display:flex}
-.vw{position:relative;max-width:100%}
-.vw img{max-width:100%;max-height:76vh;display:block;border-radius:8px}
-.vw .box{position:absolute;border:3px solid var(--acc);border-radius:8px}
-.pasang h2{display:flex;align-items:center;gap:8px}
-.pasang ol{margin:8px 0 0;padding-left:22px}.pasang li{margin:6px 0}
-.ikon{display:inline-flex;vertical-align:middle;padding:2px 6px;border-radius:6px;background:#eef2fb;font-weight:600;font-size:14px}
-.hide{display:none!important}
-.err{color:var(--bad);font-size:14px;margin-top:8px}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.modal .sheet{background:#fff;width:100%;max-width:560px;border-radius:22px 22px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom))}
+.toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:50;background:var(--navy);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;max-width:90vw;text-align:center}
+.offline{background:#fde8e8;color:#7f1d1d;text-align:center;font-size:13px;padding:8px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<header>
-  <div class="atas">
-    <img class="logo" src="logo.png" alt="Logo SMK Rantau Panjang">
-    <div>
-      <div class="kecil" id="hdrKecil">Kenangan sekolah</div>
-      <h1>SMKRP <span>MEMORIES</span></h1>
-    </div>
-  </div>
-  <div id="hdrInfo" style="color:#e3eaff">Cari semua gambar anda dari majlis sekolah dengan satu selfie.</div>
+<div id="offline" class="offline hide">Tiada sambungan internet. Carian dan gambar perlukan internet.</div>
+<header class="topbar">
+  <img src="logo.png" alt="Logo SMK Rantau Panjang">
+  <div class="nama">SMKRP <span>Memories</span></div>
+  <button id="btnPasangAtas" class="pil hide">Pasang</button>
 </header>
 
-<main>
+<main class="wrap">
   <!-- ========== UTAMA ========== -->
   <section id="vUtama">
-    <div class="card">
-      <div class="langkah"><b>1</b><span>Buka kamera dan pandang ke depan</span></div>
-      <div class="langkah"><b>2</b><span>Ikut 2 arahan ringkas (pusing kepala / senyum)</span></div>
-      <div class="langkah"><b>3</b><span>Lihat dan muat turun gambar anda</span></div>
-      <button id="btnMula" class="btn penuh" style="margin-top:12px" disabled>Memuatkan…</button>
+    <div class="hero">
+      <div class="mut" id="hdrKecil">Kenangan sekolah anda</div>
+      <h1>Satu selfie,<br>semua gambar anda.</h1>
+    </div>
+    <div class="selfieBtn">
+      <button id="btnMula" class="bulat" aria-label="Mula selfie" disabled>
+        <span>
+          <svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+          <em id="lblMula" style="font-style:normal">Memuatkan…</em>
+        </span>
+      </button>
+      <div class="mut" style="text-align:center;padding:0 40px;margin-top:14px;font-size:13px">Pandang kamera &amp; ikut 2 arahan. Selfie tidak disimpan.</div>
       <div id="errUtama" class="err"></div>
     </div>
-    <p class="nota">Selfie anda tidak disimpan. Hanya gambar langsung dari kamera diterima — upload dari galeri tidak dibenarkan.</p>
-    <div id="kadPasang" class="card pasang">
-      <h2>Pasang app di telefon</h2>
-      <p class="mut" style="margin:0">Pasang sekali, kemudian buka terus dari skrin utama seperti app biasa.</p>
-      <button id="btnPasang" class="btn kuning penuh hide" style="margin-top:12px">Pasang app sekarang</button>
-      <div id="caraAndroid">
-        <p style="margin:14px 0 0"><b>Android (Chrome)</b></p>
-        <ol>
-          <li>Tekan menu <span class="ikon">⋮</span> di penjuru kanan atas</li>
-          <li>Pilih <b>Add to Home screen</b> atau <b>Install app</b></li>
-          <li>Tekan <b>Install</b> / <b>Add</b></li>
-        </ol>
-      </div>
-      <div id="caraIos">
-        <p style="margin:14px 0 0"><b>iPhone / iPad (Safari)</b></p>
-        <ol>
-          <li>Buka link ini dalam <b>Safari</b> (bukan dalam WhatsApp atau Chrome)</li>
-          <li>Tekan butang <b>Share</b> <span class="ikon">⬆</span> di bawah skrin</li>
-          <li>Skrol dan pilih <b>Add to Home Screen</b></li>
-          <li>Tekan <b>Add</b></li>
-        </ol>
-      </div>
-      <p class="mut" style="margin:12px 0 0">Buka dari WhatsApp? Tekan <span class="ikon">⋮</span> dan pilih <b>Buka dalam browser</b> dahulu.</p>
-    </div>
-    <p style="text-align:center;margin:24px 0 0"><a href="#admin" class="mut" style="display:inline-flex;align-items:center;min-height:44px;padding:0 12px">Log masuk admin</a></p>
-  </section>
-
-  <!-- ========== SELFIE ========== -->
-  <section id="vSelfie" class="hide">
-    <div class="card">
-      <div id="steps" class="steps"></div>
-      <div class="cam"><video id="video" playsinline muted></video><div class="oval"></div><div id="camMsg" class="msg">…</div></div>
-      <button id="btnBatal" class="btn alt penuh" style="margin-top:14px">Batal</button>
+    <div class="stats" id="stats"></div>
+    <div id="kadSaya" class="card hide" style="margin-top:14px;display:flex;align-items:center;gap:12px">
+      <div style="flex:1"><b style="color:var(--navy)">Gambar Saya</b><div class="mut" id="kadSayaTeks"></div></div>
+      <a href="#saya" class="btn kecil">Buka</a>
     </div>
   </section>
 
-  <!-- ========== HASIL ========== -->
-  <section id="vHasil" class="hide">
-    <div class="card">
-      <h2 id="hasilTajuk">Hasil</h2>
-      <label class="f" for="thr">Ketepatan padanan
-        <span class="row mut" style="font-weight:400">Ketat <input id="thr" type="range" min="0.38" max="0.62" step="0.01" value="0.50"> Longgar</span>
-      </label>
-      <div id="hasilSenarai"></div>
-      <button id="btnUlang" class="btn alt penuh">Cari semula</button>
+  <!-- ========== GAMBAR SAYA ========== -->
+  <section id="vSaya" class="hide">
+    <div class="kepala">
+      <div><h1>Gambar Saya</h1><div class="mut" id="sayaInfo"></div></div>
+      <button class="bulatKecil" style="background:#eef1f8;color:var(--navy)" id="btnSelfieSemula" aria-label="Selfie semula">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+      </button>
     </div>
+    <div id="sayaAda">
+      <div class="chips" id="chips"></div>
+      <details class="padanan"><summary>Laraskan ketepatan padanan</summary>
+        <div class="row" style="padding:4px 0 8px">Ketat <input id="thr" type="range" min="0.38" max="0.62" step="0.01" value="0.50" aria-label="Ketepatan padanan"> Longgar</div>
+      </details>
+      <div id="galeriSemua"></div>
+      <div style="height:84px"></div>
+      <button id="btnSemua" class="fab">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>
+        <span id="lblSemua">Muat turun semua</span>
+      </button>
+    </div>
+    <div id="sayaKosong" class="kosong hide">
+      <div class="ikon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 8"/></svg></div>
+      <h2 id="kosongTajuk">Belum ada gambar</h2>
+      <p class="mut" id="kosongTeks">Buat selfie dahulu dan semua gambar anda akan muncul di sini.</p>
+      <a href="#" class="btn">Mula selfie</a>
+    </div>
+  </section>
+
+  <!-- ========== TENTANG ========== -->
+  <section id="vTentang" class="hide">
+    <div class="kepala"><h1>Tentang</h1></div>
+    <div class="card">
+      <h2 style="margin-bottom:6px">Apa itu SMKRP Memories?</h2>
+      <p class="mut" style="margin:0">App kenangan SMK Rantau Panjang. Buat satu selfie dan app akan cari semua gambar majlis sekolah yang ada muka anda.</p>
+    </div>
+    <div class="card">
+      <h2 style="margin-bottom:6px">Privasi</h2>
+      <ul style="margin:0;padding-left:20px" class="mut">
+        <li>Selfie diproses dalam telefon anda dan <b>tidak disimpan</b>.</li>
+        <li>Hanya gambar langsung dari kamera diterima.</li>
+        <li>"Gambar Saya" disimpan dalam telefon ini sahaja.</li>
+      </ul>
+      <button id="btnLupa" class="btn alt kecil" style="margin-top:12px">Padam "Gambar Saya" dari telefon ini</button>
+    </div>
+    <div id="kadPasang" class="card">
+      <h2 style="margin-bottom:6px">Pasang app di telefon</h2>
+      <button id="btnPasang" class="btn kuning penuh hide" style="margin:6px 0 10px">Pasang app sekarang</button>
+      <div id="caraAndroid"><b>Android (Chrome)</b>
+        <ol><li>Tekan menu <span class="ikonT">⋮</span> di kanan atas</li><li>Pilih <b>Add to Home screen</b> / <b>Install app</b></li><li>Tekan <b>Install</b></li></ol></div>
+      <div id="caraIos" style="margin-top:10px"><b>iPhone / iPad (Safari)</b>
+        <ol><li>Buka link ini dalam <b>Safari</b></li><li>Tekan butang <b>Share</b> <span class="ikonT">⬆</span></li><li>Pilih <b>Add to Home Screen</b> → <b>Add</b></li></ol></div>
+      <p class="mut" style="margin:10px 0 0">Buka dari WhatsApp? Pilih <b>Buka dalam browser</b> dahulu.</p>
+    </div>
+    <p style="text-align:center"><a href="#admin" class="mut" style="display:inline-flex;align-items:center;min-height:44px;padding:0 12px">Log masuk admin</a></p>
   </section>
 
   <!-- ========== ADMIN ========== -->
   <section id="vAdmin" class="hide">
-    <p style="margin:0 0 12px"><a href="#" class="btn alt kecil">← Kembali ke app</a></p>
-    <div id="admLogin" class="card" style="max-width:420px;margin:0 auto 16px">
-      <h2>Log masuk admin</h2>
-      <label class="f">Password<input id="admPw" type="password" autocomplete="current-password"></label>
+    <div class="kepala"><h1>Admin</h1><a href="#" class="btn alt kecil">← Kembali</a></div>
+    <div id="admLogin" class="card">
+      <label class="f">Password admin<input id="admPw" type="password" autocomplete="current-password"></label>
       <button id="btnLogin" class="btn penuh">Log masuk</button>
       <div id="errLogin" class="err"></div>
     </div>
     <div id="admPanel" class="hide">
-      <div class="stats" id="admStats"></div>
+      <div class="astat" id="admStats"></div>
       <div class="card">
-        <h2>Tambah folder majlis</h2>
+        <h2 style="margin-bottom:10px">Tambah folder majlis</h2>
         <label class="f">Link folder Google Drive<input id="inLink" type="text" placeholder="https://drive.google.com/drive/folders/…"></label>
-        <label class="f">Nama majlis (kosongkan untuk guna nama folder)<input id="inNama" type="text" placeholder="Contoh: Hari Sukan 2025"></label>
-        <button id="btnTambah" class="btn">Tambah &amp; mula imbas</button>
+        <label class="f">Nama majlis (kosong = guna nama folder)<input id="inNama" type="text" placeholder="Contoh: Hari Sukan 2025"></label>
+        <button id="btnTambah" class="btn penuh">Tambah &amp; mula imbas</button>
         <div id="errTambah" class="err"></div>
-        <p class="mut" id="akaunNota"></p>
+        <p class="mut" id="akaunNota" style="margin-bottom:0"></p>
       </div>
       <div id="imbasCard" class="card hide">
         <h2 id="imbasTajuk">Sedang diimbas</h2>
         <div class="bar"><div id="imbasBar"></div></div>
         <p class="mut" id="imbasTeks"></p>
-        <p class="nota">Biarkan tab ini terbuka. Kalau terhenti, tekan "Imbas" sekali lagi — gambar yang siap tidak diulang.</p>
+        <p class="nota">Biarkan skrin ini terbuka. Kalau terhenti, tekan "Imbas" semula — gambar yang siap tidak diulang.</p>
         <button id="btnHenti" class="btn alt kecil">Henti</button>
       </div>
-      <div class="card scroll">
+      <div class="card">
         <h2>Folder majlis</h2>
-        <table><thead><tr><th>Majlis</th><th style="text-align:right">Gambar</th><th style="text-align:right">Muka</th><th>Status</th><th>Tindakan</th></tr></thead><tbody id="admRows"></tbody></table>
+        <div id="admRows"></div>
       </div>
-      <button id="btnKeluar" class="btn alt kecil">Log keluar</button>
+      <p style="text-align:center"><button id="btnKeluar" class="btn alt kecil">Log keluar admin</button></p>
     </div>
   </section>
 </main>
 
-<div id="modal" class="modal" role="dialog" aria-modal="true">
-  <div class="vw"><img id="mImg" alt="Gambar penuh"><div id="mBox" class="box hide"></div></div>
-  <p id="mMsg" style="color:#fff"></p>
-  <div class="row" style="margin-top:12px"><a id="mDl" class="btn kuning" download>Muat turun</a><button id="mTutup" class="btn alt">Tutup</button></div>
+<nav class="bawah" id="navBawah">
+  <a href="#" data-v="vUtama"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg></i>Utama</a>
+  <a href="#saya" data-v="vSaya"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></i>Gambar Saya</a>
+  <a href="#tentang" data-v="vTentang"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg></i>Tentang</a>
+</nav>
+
+<!-- Kamera selfie -->
+<div id="kamera" class="kamera hide" role="dialog" aria-label="Selfie live">
+  <div class="atas">
+    <button id="btnBatal" class="bulatKecil" aria-label="Batal"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
+    <div style="flex:1;text-align:center;font:600 17px Outfit">Selfie live</div>
+    <div style="width:44px"></div>
+  </div>
+  <div class="cam"><video id="video" playsinline muted></video><div class="oval"></div><div id="camMsg" class="msg">…</div></div>
+  <div id="steps" class="steps"></div>
 </div>
-<div id="sah" class="modal"><div class="card" style="max-width:400px"><h2 id="sahTajuk">Pasti?</h2><p class="mut" id="sahTeks"></p><div class="row"><button id="sahYa" class="btn merah">Ya</button><button id="sahTidak" class="btn alt">Batal</button></div></div></div>
+
+<!-- Paparan penuh -->
+<div id="lihat" class="lihat hide" role="dialog" aria-label="Lihat gambar">
+  <div class="atas">
+    <button id="lTutup" class="bulatKecil" aria-label="Tutup"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
+    <div class="tajuk"><b id="lMajlis"></b><span id="lKira"></span></div>
+    <div style="width:44px"></div>
+  </div>
+  <div class="pentas" id="pentas">
+    <div class="bingkai"><img id="lImg" alt="Gambar penuh"><div id="lKotak" class="kotak hide"></div></div>
+    <div id="lMuat" class="muat">Memuatkan…</div>
+    <button class="bulatKecil nav kiri" id="lPrev" aria-label="Sebelum"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+    <button class="bulatKecil nav kanan" id="lNext" aria-label="Seterusnya"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+  </div>
+  <div class="petunjuk">Leret kiri / kanan · ketik dua kali untuk zoom</div>
+  <div class="aksi">
+    <button class="k1" id="lKongsi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.6"/><path d="M8.2 13.2l7.6 4.6"/></svg>Kongsi</button>
+    <button class="k2" id="lMuatTurun"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>Muat turun</button>
+    <button class="k3" id="lHati"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg><span>Kegemaran</span></button>
+  </div>
+</div>
+
+<div id="sah" class="modal"><div class="sheet"><h2 id="sahTajuk">Pasti?</h2><p class="mut" id="sahTeks"></p><div class="row"><button id="sahYa" class="btn merah">Ya</button><button id="sahTidak" class="btn alt">Batal</button></div></div></div>
+<div id="toast" class="toast hide" role="status"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/dist/face-api.js"></script>
 <script>
 {
 /* =========================================================
-   TETAPAN: tampal URL Web App Apps Script di sini
+   TETAPAN: URL Web App Apps Script
    ========================================================= */
 const API_URL = 'https://script.google.com/macros/s/AKfycbwVMQ9BjaE3Fc0By-jRySMushxlucSfDArd2oCf3gXwSbGP5gifgzpGKq1bFF8q-eu5cw/exec';
 
@@ -200,20 +314,35 @@ const MODEL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/model/';
 const SCALE = 300;
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const sleep = ms => new Promise(r => setTimeout(r, ms));
+const simpan = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+const baca = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } };
 
 async function api(action, data = {}) {
+  if (!navigator.onLine) throw new Error('Tiada sambungan internet.');
   const r = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action, ...data }) });
   const j = await r.json();
   if (!j.ok) throw new Error(j.error || 'Ralat pelayan');
   return j.data;
 }
+let toastT;
+function toast(m) { const t = $('toast'); t.textContent = m; t.classList.remove('hide'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.add('hide'), 2600); }
+const kemasOffline = () => $('offline').classList.toggle('hide', navigator.onLine);
+addEventListener('online', kemasOffline); addEventListener('offline', kemasOffline); kemasOffline();
 
 /* ---------- Navigasi ---------- */
-const VIEWS = ['vUtama', 'vSelfie', 'vHasil', 'vAdmin'];
-const show = v => VIEWS.forEach(x => $(x).classList.toggle('hide', x !== v));
-function route() { if (location.hash === '#admin') { show('vAdmin'); if (token) admMuat(); } else show('vUtama'); }
-window.addEventListener('hashchange', route);
+const VIEWS = { '': 'vUtama', '#saya': 'vSaya', '#tentang': 'vTentang', '#admin': 'vAdmin' };
+function route() {
+  const v = VIEWS[location.hash] || 'vUtama';
+  Object.values(VIEWS).forEach(x => $(x).classList.toggle('hide', x !== v));
+  const tanpaNav = v === 'vAdmin';
+  $('navBawah').classList.toggle('hide', tanpaNav); document.body.classList.toggle('tanpaNav', tanpaNav);
+  document.querySelectorAll('nav.bawah a').forEach(a => a.classList.toggle('on', a.dataset.v === v));
+  if (v === 'vSaya') renderSaya();
+  if (v === 'vUtama') renderKadSaya();
+  if (v === 'vAdmin' && token) admMuat();
+  scrollTo(0, 0);
+}
+addEventListener('hashchange', route);
 
 /* ---------- Model muka ---------- */
 let modelSedia = false;
@@ -281,22 +410,26 @@ const setSteps = (n, cur) => { $('steps').innerHTML = Array.from({ length: n }, 
 
 async function mulaSelfie() {
   $('errUtama').textContent = '';
+  if (location.hash) location.hash = '';
   try {
     stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: false });
-  } catch (e) { $('errUtama').textContent = 'Kamera tidak dapat dibuka. Benarkan akses kamera dalam browser.'; return; }
+  } catch (e) { $('errUtama').textContent = 'Kamera tidak dapat dibuka. Benarkan akses kamera dalam tetapan browser.'; return; }
+  $('kamera').classList.remove('hide');
   const v = $('video'); v.srcObject = stream; await v.play();
-  running = true; show('vSelfie');
+  running = true;
   const urutan = Object.keys(CABARAN).sort(() => Math.random() - 0.5).slice(0, 2);
   const n = urutan.length + 2;
   setSteps(n, 0);
   const d1 = await rakamDepan();
+  if (!running) return;
   if (!d1) return gagal('Muka depan tidak dapat dirakam. Cuba di tempat lebih terang.');
   for (let i = 0; i < urutan.length; i++) {
     setSteps(n, i + 1);
-    if (!(await cabaran(CABARAN[urutan[i]]))) return gagal('Ujian langsung tidak lulus. Cuba lagi seorang diri.');
+    if (!(await cabaran(CABARAN[urutan[i]]))) return running ? gagal('Ujian langsung tidak lulus. Cuba lagi seorang diri.') : null;
   }
   setSteps(n, n - 1); say('Pandang depan semula');
   const d2 = await rakamDepan();
+  if (!running) return;
   if (!d2) return gagal('Muka depan tidak dapat dirakam. Cuba lagi.');
   if (dist(d1, d2) > 0.45) return gagal('Muka berubah semasa ujian. Cuba lagi seorang diri.');
   setSteps(n, n); say('Berjaya! Mencari gambar…');
@@ -304,35 +437,85 @@ async function mulaSelfie() {
   tutupKamera();
   await cari(kuantum(me));
 }
-function gagal(m) { tutupKamera(); show('vUtama'); $('errUtama').textContent = m; }
+function gagal(m) { tutupKamera(); $('errUtama').textContent = m; }
 function tutupKamera() {
   running = false;
   if (stream) stream.getTracks().forEach(t => t.stop());
-  stream = null;
+  stream = null; $('kamera').classList.add('hide');
 }
 $('btnMula').onclick = () => { if (!running) mulaSelfie(); };
-$('btnBatal').onclick = () => { tutupKamera(); show('vUtama'); };
+$('btnSelfieSemula').onclick = () => { location.hash = ''; setTimeout(() => $('btnMula').click(), 50); };
+$('btnBatal').onclick = tutupKamera;
 
-/* ================= HASIL ================= */
-let hasil = [];
+/* ================= GAMBAR SAYA ================= */
+let saya = baca('smkrp_saya', null);          // { masa, hasil:[{id,d,box,nama,majlis}] }
+let hati = new Set(baca('smkrp_hati', []));
+let tapis = 'Semua';
+let paparan = [];                              // senarai yang sedang dipapar (untuk paparan penuh)
 const thumbCache = new Map();
+
+let mencari = false;
 async function cari(b64) {
-  show('vHasil'); $('hasilTajuk').textContent = 'Mencari…'; $('hasilSenarai').innerHTML = '';
-  try { hasil = await api('cari', { desc: b64 }); }
-  catch (e) { $('hasilTajuk').textContent = 'Ralat: ' + e.message; return; }
-  render();
+  mencari = true;
+  location.hash = '#saya';
+  $('sayaAda').classList.add('hide'); $('sayaKosong').classList.remove('hide');
+  $('kosongTajuk').textContent = 'Mencari gambar anda…'; $('kosongTeks').textContent = 'Sebentar ya.';
+  try {
+    const hasil = await api('cari', { desc: b64 });
+    saya = { masa: Date.now(), hasil }; simpan('smkrp_saya', saya);
+    tapis = 'Semua'; thumbCache.clear();
+    mencari = false; renderSaya();
+  } catch (e) {
+    mencari = false;
+    $('kosongTajuk').textContent = 'Carian gagal'; $('kosongTeks').textContent = e.message;
+  }
 }
-function render() {
+function senaraiTapis() {
   const thr = +$('thr').value;
-  const h = hasil.filter(x => x.d <= thr);
+  let h = (saya ? saya.hasil : []).filter(x => x.d <= thr);
+  if (tapis === 'Kegemaran') h = h.filter(x => hati.has(x.id));
+  else if (tapis !== 'Semua') h = h.filter(x => x.majlis === tapis);
+  return h;
+}
+function renderSaya() {
+  if (mencari) return;
+  const semua = saya ? saya.hasil.filter(x => x.d <= +$('thr').value) : [];
+  if (!semua.length) {
+    $('sayaAda').classList.add('hide'); $('sayaKosong').classList.remove('hide');
+    $('kosongTajuk').textContent = saya ? 'Tiada gambar dijumpai' : 'Belum ada gambar';
+    $('kosongTeks').textContent = saya ? 'Cuba selfie semula di tempat terang, atau longgarkan padanan.' : 'Buat selfie dahulu dan semua gambar anda akan muncul di sini.';
+    if (saya) { $('sayaAda').classList.remove('hide'); $('galeriSemua').innerHTML = ''; $('chips').innerHTML = ''; $('btnSemua').classList.add('hide'); }
+    return;
+  }
+  $('sayaKosong').classList.add('hide'); $('sayaAda').classList.remove('hide'); $('btnSemua').classList.remove('hide');
+  const majlis = {};
+  semua.forEach(x => majlis[x.majlis] = (majlis[x.majlis] || 0) + 1);
+  const tarikh = new Date(saya.masa).toLocaleDateString('ms-MY', { day: 'numeric', month: 'short' });
+  $('sayaInfo').textContent = `${semua.length} gambar · ${Object.keys(majlis).length} majlis · carian ${tarikh}`;
+  const pil = [['Semua', semua.length], ...Object.entries(majlis)];
+  if (hati.size) pil.push(['Kegemaran', semua.filter(x => hati.has(x.id)).length]);
+  $('chips').innerHTML = pil.map(([n, c]) => `<button class="${n === tapis ? 'on' : ''}" data-t="${esc(n)}">${esc(n)} · ${c}</button>`).join('');
+  paparan = senaraiTapis();
   const kump = {};
-  h.forEach(x => (kump[x.majlis] = kump[x.majlis] || []).push(x));
-  const nm = Object.keys(kump).length;
-  $('hasilTajuk').innerHTML = h.length ? `${h.length} gambar <span class="acc" style="color:var(--brand)">dijumpai</span> <span class="mut">· ${nm} majlis</span>` : 'Tiada gambar dijumpai. Cuba longgarkan padanan.';
-  $('hasilSenarai').innerHTML = Object.keys(kump).map(m => `
-    <div class="majlis"><h2>${esc(m)}</h2><span class="mut">${kump[m].length} gambar</span></div>
-    <div class="grid">${kump[m].map(x => `<button data-id="${esc(x.id)}" aria-label="Lihat ${esc(x.nama)}"><img alt="" ${thumbCache.get(x.id) ? `src="${thumbCache.get(x.id)}"` : ''}><span>${Math.round((1 - x.d) * 100)}%</span></button>`).join('')}</div>`).join('');
-  muatThumb(h.map(x => x.id).filter(id => !thumbCache.has(id)));
+  paparan.forEach(x => (kump[x.majlis] = kump[x.majlis] || []).push(x));
+  let idx = 0;
+  $('galeriSemua').innerHTML = Object.keys(kump).map(m => `
+    <div class="lbl">${esc(m)} · ${kump[m].length}</div>
+    <div class="galeri">${kump[m].map((x, i) => `<button data-i="${idx++}" class="${i === 0 ? 'besar' : ''}" aria-label="Lihat ${esc(x.nama)}">
+      <img alt="" data-id="${esc(x.id)}">
+      ${i === 0 ? `<span class="pct">${Math.round((1 - x.d) * 100)}% padan</span>` : ''}
+      ${hati.has(x.id) ? '<svg class="hati" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg>' : ''}
+    </button>`).join('')}</div>`).join('');
+  // urutan paparan penuh ikut susunan grid
+  paparan = Object.values(kump).flat();
+  pasangThumb();
+}
+function pasangThumb() {
+  document.querySelectorAll('.galeri img[data-id]').forEach(im => {
+    const u = thumbCache.get(im.dataset.id);
+    if (u) { im.src = u; im.classList.add('siap'); im.parentElement.classList.add('ada'); }
+  });
+  muatThumb(paparan.map(x => x.id).filter(id => !thumbCache.has(id)));
 }
 let thumbJalan = false;
 async function muatThumb(ids) {
@@ -344,34 +527,118 @@ async function muatThumb(ids) {
       const urls = await api('thumbs', { ids: part });
       part.forEach((id, k) => {
         thumbCache.set(id, urls[k] || '');
-        document.querySelectorAll(`button[data-id="${CSS.escape(id)}"] img`).forEach(im => { if (urls[k]) im.src = urls[k]; });
+        document.querySelectorAll(`.galeri img[data-id="${CSS.escape(id)}"]`).forEach(im => {
+          if (urls[k]) { im.src = urls[k]; im.classList.add('siap'); im.parentElement.classList.add('ada'); }
+        });
       });
     }
   } catch (e) { console.warn(e); }
   thumbJalan = false;
 }
-$('thr').oninput = render;
-$('hasilSenarai').onclick = e => {
-  const b = e.target.closest('button[data-id]'); if (!b) return;
-  const x = hasil.find(h => h.id === b.dataset.id); if (x) bukaGambar(x);
-};
-$('btnUlang').onclick = () => show('vUtama');
-
-async function bukaGambar(x) {
-  $('modal').classList.add('on'); $('mImg').removeAttribute('src'); $('mBox').classList.add('hide');
-  $('mDl').classList.add('hide'); $('mMsg').textContent = 'Memuatkan gambar penuh…';
-  try {
-    const g = await api('penuh', { id: x.id });
-    $('mImg').src = g.data; $('mDl').href = g.data; $('mDl').download = g.nama;
-    $('mDl').classList.remove('hide'); $('mMsg').textContent = x.majlis + ' · ' + g.nama;
-    try {
-      const b = JSON.parse(x.box), s = $('mBox').style;
-      s.left = b[0] * 100 + '%'; s.top = b[1] * 100 + '%'; s.width = b[2] * 100 + '%'; s.height = b[3] * 100 + '%';
-      $('mBox').classList.remove('hide');
-    } catch (e) {}
-  } catch (e) { $('mMsg').textContent = 'Ralat: ' + e.message; }
+$('chips').onclick = e => { const b = e.target.closest('button[data-t]'); if (b) { tapis = b.dataset.t; renderSaya(); } };
+$('thr').oninput = renderSaya;
+$('galeriSemua').onclick = e => { const b = e.target.closest('button[data-i]'); if (b) bukaLihat(+b.dataset.i); };
+function renderKadSaya() {
+  const n = saya ? saya.hasil.filter(x => x.d <= 0.5).length : 0;
+  $('kadSaya').classList.toggle('hide', !n);
+  $('kadSayaTeks').textContent = n + ' gambar disimpan dalam telefon ini';
 }
-$('mTutup').onclick = () => $('modal').classList.remove('on');
+$('btnLupa').onclick = async () => {
+  if (!(await sahkan('Padam "Gambar Saya"?', 'Senarai gambar yang dijumpai akan dipadam dari telefon ini. Gambar asal tidak terusik.'))) return;
+  saya = null; hati = new Set(); simpan('smkrp_saya', null); simpan('smkrp_hati', []); thumbCache.clear();
+  toast('Dipadam dari telefon ini.');
+};
+
+/* ---------- Muat turun semua ---------- */
+async function ambilBlob(id) {
+  const g = await api('penuh', { id });
+  const b = await (await fetch(g.data)).blob();
+  return { nama: g.nama, blob: b, url: g.data };
+}
+function muatTurunFail(url, nama) { const a = document.createElement('a'); a.href = url; a.download = nama; document.body.appendChild(a); a.click(); a.remove(); }
+$('btnSemua').onclick = async () => {
+  const list = senaraiTapis();
+  if (!list.length || $('btnSemua').disabled) return;
+  $('btnSemua').disabled = true;
+  const fail = [];
+  try {
+    for (let i = 0; i < list.length; i++) {
+      $('lblSemua').textContent = `Memuat ${i + 1} / ${list.length}…`;
+      const f = await ambilBlob(list[i].id);
+      fail.push(new File([f.blob], f.nama, { type: f.blob.type }));
+    }
+    if (navigator.canShare && navigator.canShare({ files: fail })) {
+      $('lblSemua').textContent = 'Simpan ke galeri…';
+      try { await navigator.share({ files: fail, title: 'SMKRP Memories' }); }
+      catch (e) { if (e.name !== 'AbortError') throw e; }
+    } else {
+      for (const f of fail) { const u = URL.createObjectURL(f); muatTurunFail(u, f.name); await new Promise(r => setTimeout(r, 400)); setTimeout(() => URL.revokeObjectURL(u), 5000); }
+      toast(fail.length + ' gambar dimuat turun.');
+    }
+  } catch (e) { toast('Gagal: ' + e.message); }
+  $('btnSemua').disabled = false; $('lblSemua').textContent = 'Muat turun semua';
+};
+
+/* ================= PAPARAN PENUH ================= */
+let lIdx = 0, lSemasa = null, lZoom = false;
+const penuhCache = new Map();
+function bukaLihat(i) { lIdx = i; $('lihat').classList.remove('hide'); document.body.style.overflow = 'hidden'; tunjukLihat(); }
+function tutupLihat() { $('lihat').classList.add('hide'); document.body.style.overflow = ''; renderSaya(); }
+async function tunjukLihat() {
+  const x = paparan[lIdx]; if (!x) return;
+  lZoom = false; $('lImg').style.transform = '';
+  $('lMajlis').textContent = x.majlis; $('lKira').textContent = `${lIdx + 1} daripada ${paparan.length}`;
+  $('lHati').classList.toggle('on', hati.has(x.id)); $('lHati').querySelector('span').textContent = hati.has(x.id) ? 'Disimpan' : 'Kegemaran';
+  $('lPrev').classList.toggle('hide', lIdx === 0); $('lNext').classList.toggle('hide', lIdx === paparan.length - 1);
+  $('lKotak').classList.add('hide');
+  const t = thumbCache.get(x.id); if (t) $('lImg').src = t; else $('lImg').removeAttribute('src');
+  $('lMuat').classList.remove('hide');
+  try {
+    let g = penuhCache.get(x.id);
+    if (!g) { g = await api('penuh', { id: x.id }); penuhCache.set(x.id, g); if (penuhCache.size > 6) penuhCache.delete(penuhCache.keys().next().value); }
+    if (paparan[lIdx] !== x) return;
+    lSemasa = g; $('lImg').src = g.data;
+    try {
+      const b = JSON.parse(x.box), s = $('lKotak').style;
+      s.left = b[0] * 100 + '%'; s.top = b[1] * 100 + '%'; s.width = b[2] * 100 + '%'; s.height = b[3] * 100 + '%';
+      $('lKotak').classList.remove('hide');
+    } catch (e) {}
+    $('lMuat').classList.add('hide');
+  } catch (e) { $('lMuat').textContent = 'Ralat: ' + e.message; }
+}
+const gerak = d => { const n = lIdx + d; if (n >= 0 && n < paparan.length) { lIdx = n; tunjukLihat(); } };
+$('lPrev').onclick = () => gerak(-1);
+$('lNext').onclick = () => gerak(1);
+$('lTutup').onclick = tutupLihat;
+let sx = 0, sy = 0;
+$('pentas').addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+$('pentas').addEventListener('touchend', e => {
+  if (lZoom) return;
+  const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) gerak(dx < 0 ? 1 : -1);
+  else if (dy > 90 && Math.abs(dy) > Math.abs(dx)) tutupLihat();
+});
+$('lImg').ondblclick = () => { lZoom = !lZoom; $('lImg').style.transform = lZoom ? 'scale(2)' : ''; $('lKotak').classList.toggle('hide', lZoom); };
+$('lMuatTurun').onclick = () => { if (lSemasa) { muatTurunFail(lSemasa.data, lSemasa.nama); toast('Dimuat turun.'); } };
+$('lKongsi').onclick = async () => {
+  if (!lSemasa) return;
+  try {
+    const b = await (await fetch(lSemasa.data)).blob();
+    const f = new File([b], lSemasa.nama, { type: b.type });
+    if (navigator.canShare && navigator.canShare({ files: [f] })) await navigator.share({ files: [f], title: 'SMKRP Memories' });
+    else { muatTurunFail(lSemasa.data, lSemasa.nama); toast('Gambar dimuat turun. Kongsi dari galeri telefon.'); }
+  } catch (e) { if (e.name !== 'AbortError') toast('Tidak dapat kongsi.'); }
+};
+$('lHati').onclick = () => {
+  const x = paparan[lIdx]; if (!x) return;
+  hati.has(x.id) ? hati.delete(x.id) : hati.add(x.id);
+  simpan('smkrp_hati', [...hati]); tunjukLihatHati(x);
+};
+function tunjukLihatHati(x) { $('lHati').classList.toggle('on', hati.has(x.id)); $('lHati').querySelector('span').textContent = hati.has(x.id) ? 'Disimpan' : 'Kegemaran'; }
+addEventListener('keydown', e => {
+  if ($('lihat').classList.contains('hide')) return;
+  if (e.key === 'ArrowLeft') gerak(-1); else if (e.key === 'ArrowRight') gerak(1); else if (e.key === 'Escape') tutupLihat();
+});
 
 /* ================= ADMIN ================= */
 let token = sessionStorage.getItem('smkrp_tok') || '';
@@ -382,7 +649,7 @@ $('btnLogin').onclick = async () => {
   try {
     const r = await api('login', { pw: $('admPw').value });
     token = r.token; sessionStorage.setItem('smkrp_tok', token);
-    $('akaunNota').textContent = 'Folder mesti dikongsi (Viewer) dengan ' + r.akaun + '. Subfolder turut diimbas.';
+    sessionStorage.setItem('smkrp_akaun', r.akaun);
     admMuat();
   } catch (e) { $('errLogin').textContent = e.message; }
   $('btnLogin').disabled = false;
@@ -394,19 +661,20 @@ async function admMuat() {
   try { folders = await api('folders', { token }); }
   catch (e) { $('btnKeluar').click(); $('errLogin').textContent = e.message; return; }
   $('admLogin').classList.add('hide'); $('admPanel').classList.remove('hide');
+  const ak = sessionStorage.getItem('smkrp_akaun');
+  $('akaunNota').textContent = ak ? 'Folder mesti dikongsi (Viewer) dengan ' + ak + ', atau "Anyone with the link".' : '';
   const g = folders.reduce((a, f) => a + f.gambar, 0), m = folders.reduce((a, f) => a + f.muka, 0);
-  $('admStats').innerHTML = [[folders.length, 'Majlis'], [g.toLocaleString(), 'Gambar diimbas'], [m.toLocaleString(), 'Muka dikesan']]
-    .map(s => `<div class="stat"><b>${s[0]}</b>${s[1]}</div>`).join('');
-  $('admRows').innerHTML = folders.length ? folders.map(f => `<tr>
-    <td><b>${esc(f.nama)}</b></td><td style="text-align:right">${f.gambar}</td><td style="text-align:right">${f.muka}</td>
-    <td><span class="chip ${f.status === 'aktif' ? 'aktif' : 'sembunyi'}">${f.status === 'aktif' ? 'Boleh dicari' : 'Disembunyikan'}</span></td>
-    <td><div class="row">
-      <button class="btn alt kecil" data-act="imbas" data-id="${esc(f.id)}">Imbas</button>
-      <button class="btn alt kecil" data-act="${f.status === 'aktif' ? 'sembunyi' : 'aktif'}" data-id="${esc(f.id)}">${f.status === 'aktif' ? 'Sembunyi' : 'Tunjuk'}</button>
-      <button class="btn merah kecil" data-act="buang" data-id="${esc(f.id)}">Buang</button>
-    </div></td></tr>`).join('') : '<tr><td colspan="5" class="mut">Belum ada folder. Tambah link folder di atas.</td></tr>';
+  $('admStats').innerHTML = [[folders.length, 'Majlis'], [g.toLocaleString(), 'Gambar'], [m.toLocaleString(), 'Muka']]
+    .map(s => `<div><b>${s[0]}</b><span class="mut">${s[1]}</span></div>`).join('');
+  $('admRows').innerHTML = folders.length ? folders.map(f => `<div class="folder">
+      <div class="row" style="justify-content:space-between"><b>${esc(f.nama)}</b><span class="chip ${f.status === 'aktif' ? 'aktif' : 'sembunyi'}">${f.status === 'aktif' ? 'Boleh dicari' : 'Disembunyikan'}</span></div>
+      <div class="mut">${f.gambar} gambar · ${f.muka} muka</div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn alt kecil" data-act="imbas" data-id="${esc(f.id)}">Imbas</button>
+        <button class="btn alt kecil" data-act="${f.status === 'aktif' ? 'sembunyi' : 'aktif'}" data-id="${esc(f.id)}">${f.status === 'aktif' ? 'Sembunyi' : 'Tunjuk'}</button>
+        <button class="btn merah kecil" data-act="buang" data-id="${esc(f.id)}">Buang</button>
+      </div></div>`).join('') : '<p class="mut">Belum ada folder. Tambah link folder di atas.</p>';
 }
-
 $('admRows').onclick = async e => {
   const b = e.target.closest('button[data-act]'); if (!b) return;
   const f = folders.find(x => x.id === b.dataset.id); if (!f) return;
@@ -414,14 +682,12 @@ $('admRows').onclick = async e => {
   if (act === 'imbas') return imbas(f);
   if (act === 'buang') {
     if (!(await sahkan('Buang "' + f.nama + '"?', 'Data imbasan majlis ini akan dipadam dan gambarnya tidak boleh dicari lagi. Gambar asal dalam Google Drive tidak terusik.'))) return;
-    b.disabled = true; try { await api('buang', { token, folderId: f.id }); } catch (err) { alertErr(err); }
+    b.disabled = true; try { await api('buang', { token, folderId: f.id }); } catch (err) { $('errTambah').textContent = err.message; }
   } else {
-    b.disabled = true; try { await api('setStatus', { token, folderId: f.id, status: act }); } catch (err) { alertErr(err); }
+    b.disabled = true; try { await api('setStatus', { token, folderId: f.id, status: act }); } catch (err) { $('errTambah').textContent = err.message; }
   }
   admMuat();
 };
-function alertErr(e) { $('errTambah').textContent = e.message; }
-
 $('btnTambah').onclick = async () => {
   $('errTambah').textContent = ''; $('btnTambah').disabled = true;
   try {
@@ -432,7 +698,6 @@ $('btnTambah').onclick = async () => {
   } catch (e) { $('errTambah').textContent = e.message; }
   $('btnTambah').disabled = false;
 };
-
 function sahkan(tajuk, teks) {
   return new Promise(ok => {
     $('sahTajuk').textContent = tajuk; $('sahTeks').textContent = teks; $('sah').classList.add('on');
@@ -440,10 +705,7 @@ function sahkan(tajuk, teks) {
     $('sahTidak').onclick = () => { $('sah').classList.remove('on'); ok(false); };
   });
 }
-
-function muatImej(src) {
-  return new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = src; });
-}
+function muatImej(src) { return new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = src; }); }
 function kecilkan(im, max) {
   const k = Math.min(1, max / Math.max(im.width, im.height));
   const c = document.createElement('canvas');
@@ -451,11 +713,11 @@ function kecilkan(im, max) {
   c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
   return c;
 }
-
 async function imbas(f) {
   if (sedangImbas) return;
   if (!modelSedia) { $('errTambah').textContent = 'Model muka masih dimuatkan. Cuba sebentar lagi.'; return; }
   sedangImbas = true; henti = false;
+  let kunci = null; try { kunci = await navigator.wakeLock.request('screen'); } catch (e) {}
   $('imbasCard').classList.remove('hide'); $('imbasTajuk').textContent = 'Sedang diimbas: ' + f.nama;
   $('imbasBar').style.width = '0%'; $('imbasTeks').textContent = 'Menyenaraikan gambar dalam folder…';
   let senarai;
@@ -482,6 +744,7 @@ async function imbas(f) {
   }
   if (!senarai.length) $('imbasTeks').textContent = 'Tiada gambar baru untuk diimbas.';
   else $('imbasTeks').textContent += henti ? ' · Dihentikan.' : ' · Siap!';
+  try { kunci && kunci.release(); } catch (e) {}
   sedangImbas = false;
   admMuat();
 }
@@ -493,29 +756,31 @@ const standalone = matchMedia('(display-mode: standalone)').matches || navigator
 const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const android = /android/i.test(navigator.userAgent);
 if (standalone) $('kadPasang').classList.add('hide');
-else if (ios) $('caraAndroid').classList.add('hide');
-else if (android) $('caraIos').classList.add('hide');
+else {
+  if (ios) $('caraAndroid').classList.add('hide'); else if (android) $('caraIos').classList.add('hide');
+  if (ios || android) $('btnPasangAtas').classList.remove('hide');
+}
 let promptPasang = null;
-window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); promptPasang = e; $('btnPasang').classList.remove('hide'); });
-$('btnPasang').onclick = async () => {
-  if (!promptPasang) return;
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); promptPasang = e; $('btnPasang').classList.remove('hide'); $('btnPasangAtas').classList.remove('hide'); });
+async function pasang() {
+  if (!promptPasang) { location.hash = '#tentang'; setTimeout(() => $('kadPasang').scrollIntoView({ behavior: 'smooth' }), 80); return; }
   promptPasang.prompt();
   const r = await promptPasang.userChoice;
   promptPasang = null; $('btnPasang').classList.add('hide');
-  if (r.outcome === 'accepted') $('kadPasang').classList.add('hide');
-};
-window.addEventListener('appinstalled', () => $('kadPasang').classList.add('hide'));
+  if (r.outcome === 'accepted') { $('kadPasang').classList.add('hide'); $('btnPasangAtas').classList.add('hide'); }
+}
+$('btnPasang').onclick = pasang; $('btnPasangAtas').onclick = pasang;
+addEventListener('appinstalled', () => { $('kadPasang').classList.add('hide'); $('btnPasangAtas').classList.add('hide'); });
 
 /* ================= MULA ================= */
 (async () => {
   route();
-  if (API_URL.indexOf('http') !== 0) { $('btnMula').textContent = 'API belum disambung'; $('errUtama').textContent = 'Admin: tampal URL Apps Script dalam index.html (API_URL).'; return; }
   api('info').then(i => {
-    $('hdrKecil').textContent = i.sekolah + ' · Kenangan sekolah';
-    $('hdrInfo').textContent = `Cari gambar anda daripada ${i.gambar.toLocaleString()} gambar dalam ${i.majlis} majlis.`;
+    $('hdrKecil').textContent = 'Kenangan ' + i.sekolah;
+    $('stats').innerHTML = `<div class="stat"><b>${Number(i.gambar).toLocaleString()}</b><span>gambar boleh dicari</span></div><div class="stat"><b>${Number(i.majlis)}</b><span>majlis</span></div>`;
   }).catch(() => {});
-  try { await muatModel(); $('btnMula').disabled = false; $('btnMula').textContent = 'Mula selfie'; }
-  catch (e) { $('btnMula').textContent = 'Gagal memuatkan'; $('errUtama').textContent = String(e.message || e); }
+  try { await muatModel(); $('btnMula').disabled = false; $('lblMula').textContent = 'Mula selfie'; }
+  catch (e) { $('lblMula').textContent = 'Gagal dimuat'; $('errUtama').textContent = 'Model muka gagal dimuatkan. Semak internet dan muat semula.'; }
 })();
 }
 </script>
