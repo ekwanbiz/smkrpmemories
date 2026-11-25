@@ -759,7 +759,7 @@ $('admRows').onclick = async e => {
   if (act === 'imbas') return imbas(f);
   if (act === 'buang') {
     if (!(await sahkan('Buang "' + f.nama + '"?', 'Data imbasan majlis ini akan dipadam dan gambarnya tidak boleh dicari lagi. Gambar asal dalam Google Drive tidak terusik.'))) return;
-    b.disabled = true; try { await api('buang', { token, folderId: f.id }); } catch (err) { $('errTambah').textContent = err.message; }
+    b.disabled = true; try { await api('buang', { token, folderId: f.id }); await binaIndeks(); } catch (err) { $('errTambah').textContent = err.message; }
   } else {
     b.disabled = true; try { await api('setStatus', { token, folderId: f.id, status: act }); } catch (err) { $('errTambah').textContent = err.message; }
   }
@@ -820,12 +820,18 @@ async function imbas(f) {
     $('imbasTeks').textContent = `${siap} / ${senarai.length} gambar · ${muka} muka${gagalN ? ' · ' + gagalN + ' gagal' : ''} · baki ± ${baki >= 60 ? Math.round(baki / 60) + ' min' : baki + ' saat'}`;
   }
   if (!senarai.length) $('imbasTeks').textContent = 'Tiada gambar baru untuk diimbas.';
-  else $('imbasTeks').textContent += henti ? ' · Dihentikan.' : ' · Siap!';
+  else {
+    const asal = $('imbasTeks').textContent;
+    $('imbasTeks').textContent = asal + ' · Mengemas kini indeks carian…';
+    await binaIndeks();
+    $('imbasTeks').textContent = asal + (henti ? ' · Dihentikan.' : ' · Siap! Indeks carian dikemas kini.');
+  }
   try { kunci && kunci.release(); } catch (e) {}
   sedangImbas = false;
   admMuat();
 }
 $('btnHenti').onclick = () => { henti = true; };
+async function binaIndeks() { try { await api('binaIndeks', { token }); } catch (e) { console.warn('Indeks:', e.message); } }
 
 /* ================= PASANG (PWA) ================= */
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
