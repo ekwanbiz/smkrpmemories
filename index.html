@@ -642,12 +642,31 @@ function renderSaya() {
   paparan = Object.values(kump).flat();
   pasangThumb();
 }
-function pasangThumb() {
-  document.querySelectorAll('.galeri img[data-id]').forEach(im => {
-    const u = thumbCache.get(im.dataset.id);
-    if (u) { im.src = u; im.classList.add('siap'); im.parentElement.classList.add('ada'); }
+// Simpanan thumbnail dalam telefon: buka semula app = gambar terus keluar
+const THUMB_SIMPAN = 'smkrp-thumb-v1';
+const kunciThumb = id => '/__thumb/' + encodeURIComponent(id);
+async function bacaThumbTelefon(ids) {
+  if (!ids.length || !('caches' in window)) return;
+  try {
+    const c = await caches.open(THUMB_SIMPAN);
+    await Promise.all(ids.map(async id => { const r = await c.match(kunciThumb(id)); if (r) thumbCache.set(id, await r.text()); }));
+  } catch (e) {}
+}
+function simpanThumbTelefon(id, u) {
+  if (!u || !('caches' in window)) return;
+  caches.open(THUMB_SIMPAN).then(c => c.put(kunciThumb(id), new Response(u))).catch(() => {});
+}
+function tunjukThumb(id, u) {
+  if (!u) return;
+  document.querySelectorAll(`.galeri img[data-id="${CSS.escape(id)}"]`).forEach(im => {
+    im.src = u; im.classList.add('siap'); im.parentElement.classList.add('ada');
   });
-  muatThumb(paparan.map(x => x.id).filter(id => !thumbCache.has(id)));
+}
+async function pasangThumb() {
+  const ids = paparan.map(x => x.id);
+  await bacaThumbTelefon(ids.filter(id => !thumbCache.has(id)));
+  ids.forEach(id => tunjukThumb(id, thumbCache.get(id)));
+  muatThumb(ids.filter(id => !thumbCache.has(id)));
 }
 let thumbJalan = false, muatTutup = null;
 function kemasMuat() {
@@ -674,22 +693,28 @@ async function muatThumb(ids) {
   if (thumbJalan || !ids.length) return;
   thumbJalan = true;
   let ralat = false;
-  try {
-    for (let i = 0; i < ids.length; i += 12) {
-      const part = ids.slice(i, i + 12);
-      const urls = await api('thumbs', { ids: part });
-      part.forEach((id, k) => {
-        thumbCache.set(id, urls[k] || '');
-        document.querySelectorAll(`.galeri img[data-id="${CSS.escape(id)}"]`).forEach(im => {
-          if (urls[k]) { im.src = urls[k]; im.classList.add('siap'); im.parentElement.classList.add('ada'); }
+  // Kumpulan pertama kecil (6) supaya gambar teratas cepat keluar, kemudian 3 permintaan serentak
+  const kumpulan = [ids.slice(0, 6)];
+  for (let i = 6; i < ids.length; i += 8) kumpulan.push(ids.slice(i, i + 8));
+  let seterus = 0;
+  const pekerja = async () => {
+    while (seterus < kumpulan.length && !ralat) {
+      const part = kumpulan[seterus++];
+      try {
+        const urls = await api('thumbs', { ids: part });
+        part.forEach((id, k) => {
+          thumbCache.set(id, urls[k] || '');
+          simpanThumbTelefon(id, urls[k]);
+          tunjukThumb(id, urls[k]);
         });
-      });
-      kemasMuat();
+        kemasMuat();
+      } catch (e) {
+        console.warn(e); ralat = true;
+        $('muatTeks').textContent = 'Sambungan terganggu. Tarik ke bawah atau buka semula untuk cuba lagi.';
+      }
     }
-  } catch (e) {
-    console.warn(e); ralat = true;
-    $('muatTeks').textContent = 'Sambungan terganggu. Tarik ke bawah atau buka semula untuk cuba lagi.';
-  }
+  };
+  await Promise.all([pekerja(), pekerja(), pekerja()]);
   thumbJalan = false;
   const baki = paparan.map(x => x.id).filter(id => !thumbCache.has(id));
   if (baki.length && !ralat) muatThumb(baki);
@@ -705,6 +730,7 @@ function renderKadSaya() {
 $('btnLupa').onclick = async () => {
   if (!(await sahkan('Padam "Gambar Saya"?', 'Senarai gambar yang dijumpai akan dipadam dari telefon ini. Gambar asal tidak terusik.'))) return;
   saya = null; hati = new Set(); simpan('smkrp_saya', null); simpan('smkrp_hati', []); thumbCache.clear();
+  try { await caches.delete(THUMB_SIMPAN); } catch (e) {}
   toast('Dipadam dari telefon ini.');
 };
 

@@ -1,9 +1,9 @@
 // SMKRP MEMORIES service worker
-const CACHE = 'smkrp-v3';
+const CACHE = 'smkrp-v4';
 const SHELL = ['./', './index.html', './logo.png', './icon-192.png', './icon-512.png', './manifest.json'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL))); self.skipWaiting(); });
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE && k !== 'smkrp-model').map(k => caches.delete(k)))));
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE && k !== 'smkrp-model' && !k.startsWith('smkrp-thumb')).map(k => caches.delete(k)))));
   self.clients.claim();
 });
 self.addEventListener('fetch', e => {
