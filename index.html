@@ -272,6 +272,10 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
   <!-- ========== ADMIN ========== -->
   <section id="vAdmin" class="hide">
     <div class="kepala"><h1>Admin</h1><a href="#" class="btn alt kecil">← Kembali</a></div>
+    <div id="admMuatan" class="card hide" style="text-align:center">
+      <p class="mut" id="admMuatanTeks" style="margin:0">Memuatkan halaman admin…</p>
+      <button id="admCubaLagi" class="btn alt kecil hide" style="margin-top:10px">Cuba lagi</button>
+    </div>
     <div id="admLogin" class="card">
       <label class="f">Password admin<input id="admPw" type="password" autocomplete="current-password"></label>
       <button id="btnLogin" class="btn penuh">Log masuk</button>
@@ -467,7 +471,13 @@ function route() {
   document.querySelectorAll('nav.bawah a').forEach(a => a.classList.toggle('on', a.dataset.v === v));
   if (v === 'vSaya') renderSaya();
   if (v === 'vUtama') renderKadSaya();
-  if (v === 'vAdmin' && token) admMuat();
+  if (v === 'vAdmin') {
+    if (token && $('admPanel').classList.contains('hide')) {
+      $('admLogin').classList.add('hide'); $('admMuatan').classList.remove('hide');
+      $('admMuatanTeks').textContent = 'Memuatkan halaman admin…'; $('admCubaLagi').classList.add('hide');
+    }
+    if (token) admMuat();
+  }
   scrollTo(0, 0);
 }
 addEventListener('hashchange', route);
@@ -960,13 +970,21 @@ $('btnLogin').onclick = async () => {
   } catch (e) { $('errLogin').textContent = e.message; }
   $('btnLogin').disabled = false;
 };
+$('admCubaLagi').onclick = () => { $('admMuatanTeks').textContent = 'Memuatkan halaman admin…'; $('admCubaLagi').classList.add('hide'); admMuat(); };
 $('admPw').onkeydown = e => { if (e.key === 'Enter') $('btnLogin').click(); };
-$('btnKeluar').onclick = () => { token = ''; simpanKekal('smkrp_tok', null); try { sessionStorage.removeItem('smkrp_tok'); } catch (e) {} $('admPanel').classList.add('hide'); $('admLogin').classList.remove('hide'); };
+$('btnKeluar').onclick = () => { token = ''; simpanKekal('smkrp_tok', null); try { sessionStorage.removeItem('smkrp_tok'); } catch (e) {} $('admPanel').classList.add('hide'); $('admMuatan').classList.add('hide'); $('admLogin').classList.remove('hide'); };
 
 async function admMuat() {
   try { folders = await api('folders', { token }); }
-  catch (e) { $('btnKeluar').click(); $('errLogin').textContent = e.message; return; }
-  $('admLogin').classList.add('hide'); $('admPanel').classList.remove('hide');
+  catch (e) {
+    if (/Sesi admin tamat|Tiada akses/.test(e.message)) {
+      $('btnKeluar').click(); $('admMuatan').classList.add('hide'); $('errLogin').textContent = e.message;
+    } else if ($('admPanel').classList.contains('hide')) {
+      $('admMuatanTeks').textContent = 'Tidak dapat dimuatkan: ' + e.message; $('admCubaLagi').classList.remove('hide');
+    } else toast('Gagal memuat semula: ' + e.message);
+    return;
+  }
+  $('admMuatan').classList.add('hide'); $('admLogin').classList.add('hide'); $('admPanel').classList.remove('hide');
   const ak = bacaKekal('smkrp_akaun');
   $('akaunNota').textContent = ak ? 'Folder mesti dikongsi (Viewer) dengan ' + ak + ', atau "Anyone with the link".' : '';
   const g = folders.reduce((a, f) => a + f.gambar, 0), m = folders.reduce((a, f) => a + f.muka, 0);
