@@ -170,6 +170,12 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
 .gaGrid span.kosong{background:#fde8e8;color:#991b1b}
 .bannerMajlis{margin:14px 16px 0;padding:12px 14px;border-radius:14px;background:var(--kuning2);color:var(--navy);display:flex;gap:10px;align-items:center;font-size:14px}
 .modal.tengah{align-items:center}
+.strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;margin:10px 0}
+.strip div{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:#e9ecf4;animation:masuk .3s ease-out}
+.strip img{width:100%;height:100%;object-fit:cover;display:block}
+.strip span{position:absolute;right:3px;bottom:3px;padding:0 5px;border-radius:5px;background:rgba(255,255,255,.92);font-size:10px;font-weight:700;color:var(--navy)}
+.strip span.kosong{background:#fde8e8;color:#991b1b}
+@keyframes masuk{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
 .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:50;background:var(--navy);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;max-width:90vw;text-align:center}
 .offline{background:#fde8e8;color:#7f1d1d;text-align:center;font-size:13px;padding:8px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -306,6 +312,7 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
         <h2 id="imbasTajuk">Sedang diimbas</h2>
         <div class="bar"><div id="imbasBar"></div></div>
         <p class="mut" id="imbasTeks"></p>
+        <div id="imbasStrip" class="strip" aria-label="Gambar yang baru siap"></div>
         <p class="nota">Tips supaya laju: guna laptop dengan pengecas, biarkan tab ini di depan (jangan tukar tab), dan guna Wi-Fi yang stabil. Kalau terhenti, ulang semula — gambar yang siap tidak diulang.</p>
         <button id="btnHenti" class="btn alt kecil">Henti</button>
       </div>
@@ -1068,59 +1075,78 @@ async function simpanKelompok(folderId, items) {
   }
   for (const it of items) await api('simpan', { token, folderId, id: it.id, nama: it.nama, w: it.w, h: it.h, faces: it.faces });
 }
-async function jalanKolam(tajuk, senarai, kerjaSatu, selepas) {
+// Papar gambar yang baru siap, satu per satu (12 terkini)
+function tambahStrip(url, muka) {
+  const d = document.createElement('div');
+  d.innerHTML = `<img alt=""><span class="${muka ? '' : 'kosong'}">${muka}</span>`;
+  d.querySelector('img').src = url;
+  const st = $('imbasStrip'); st.prepend(d);
+  while (st.children.length > 12) st.lastChild.remove();
+}
+const kecilUrl = c => kecilkan(c, 160).toDataURL('image/jpeg', 0.7);
+
+// Antara muka kemajuan bersama untuk imbas & upload
+function mulaProses(tajuk, jumlah) {
   sedangImbas = true; henti = false;
   $('btnHenti').disabled = false; $('btnHenti').textContent = 'Henti';
-  let kunci = null; try { kunci = await navigator.wakeLock.request('screen'); } catch (e) {}
   $('imbasCard').classList.remove('hide'); $('imbasTajuk').textContent = tajuk;
-  $('imbasBar').style.width = '0%';
-  const st = { siap: 0, muka: 0, gagal: 0 }, t0 = Date.now();
-  const kemas = () => {
-    const baki = st.siap ? Math.round((Date.now() - t0) / st.siap * (senarai.length - st.siap) / 1000) : 0;
-    $('imbasBar').style.width = (100 * st.siap / senarai.length) + '%';
-    $('imbasTeks').textContent = `${st.siap} / ${senarai.length} gambar · ${st.muka} muka${st.gagal ? ' · ' + st.gagal + ' gagal' : ''}${st.siap ? ' · baki ± ' + (baki >= 60 ? Math.round(baki / 60) + ' min' : baki + ' saat') : ''}`;
+  $('imbasBar').style.width = '0%'; $('imbasStrip').innerHTML = '';
+  setTimeout(() => $('imbasCard').scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  const st = { siap: 0, muka: 0, gagal: 0, t0: Date.now(), jumlah, kunci: null };
+  try { navigator.wakeLock.request('screen').then(k => st.kunci = k).catch(() => {}); } catch (e) {}
+  st.kemas = () => {
+    const baki = st.siap ? Math.round((Date.now() - st.t0) / st.siap * (jumlah - st.siap) / 1000) : 0;
+    const purata = st.siap ? ((Date.now() - st.t0) / st.siap / 1000).toFixed(1) : '…';
+    $('imbasBar').style.width = (100 * st.siap / jumlah) + '%';
+    $('imbasTeks').textContent = `${st.siap} / ${jumlah} gambar · ${st.muka} muka${st.gagal ? ' · ' + st.gagal + ' gagal' : ''} · ${purata} saat/gambar${st.siap ? ' · baki ± ' + (baki >= 60 ? Math.round(baki / 60) + ' min' : baki + ' saat') : ''}`;
   };
-  kemas();
-  let i = 0;
-  const pekerja = async () => {
-    while (i < senarai.length && !henti) {
-      const g = senarai[i++];
-      try { st.muka += await kerjaSatu(g); } catch (e) { st.gagal++; console.warn(g.nama || g.name, e); }
-      st.siap++; kemas();
-    }
-  };
-  await Promise.all(Array.from({ length: SERENTAK }, pekerja));
-  try { if (selepas) await selepas(); } catch (e) { st.gagal++; console.warn(e); }
+  st.kemas();
+  return st;
+}
+async function tamatProses(st) {
   const asal = $('imbasTeks').textContent;
   $('imbasTeks').textContent = asal + ' · Mengemas kini indeks carian…';
   await binaIndeks();
   $('imbasTeks').textContent = asal + (henti ? ' · Dihentikan. Gambar yang siap sudah boleh dicari.' : ' · Siap! Gambar sudah boleh dicari.');
   if (henti) $('imbasTajuk').textContent = 'Dihentikan';
   $('btnHenti').disabled = true; $('btnHenti').textContent = 'Selesai';
-  try { kunci && kunci.release(); } catch (e) {}
+  try { st.kunci && st.kunci.release(); } catch (e) {}
   sedangImbas = false;
   admMuat();
 }
 
+// Imbas folder Drive: muat turun 2 gambar ke hadapan, kesan muka 1 per 1, simpan berkelompok
 async function imbas(f) {
   if (sedangImbas) return;
   if (!modelSedia) { $('errTambah').textContent = 'Model muka masih dimuatkan. Cuba sebentar lagi.'; return; }
   $('imbasCard').classList.remove('hide'); $('imbasTajuk').textContent = 'Sedang diimbas: ' + f.nama;
-  $('imbasBar').style.width = '0%'; $('imbasTeks').textContent = 'Menyenaraikan gambar dalam folder…';
+  $('imbasBar').style.width = '0%'; $('imbasStrip').innerHTML = ''; $('imbasTeks').textContent = 'Menyenaraikan gambar dalam folder…';
   let senarai;
   try { senarai = await api('belum', { token, folderId: f.id }); }
   catch (e) { $('imbasTeks').textContent = 'Ralat: ' + e.message; return; }
   if (!senarai.length) { $('imbasTeks').textContent = 'Tiada gambar baru untuk diimbas.'; return; }
-  const kotak = [];
-  const flush = async (semua) => { while (kotak.length >= 10 || (semua && kotak.length)) await simpanKelompok(f.id, kotak.splice(0, 10)); };
-  await jalanKolam('Sedang diimbas: ' + f.nama, senarai, async g => {
-    const im = await muatImej(await ambilUntukImbas(g.id));
-    const c = kecilkan(im, 1600);
-    const faces = await kesanMuka(c);
-    kotak.push({ id: g.id, nama: g.nama, w: im.width, h: im.height, faces });
-    await flush(false);
-    return faces.length;
-  }, () => flush(true));
+  const st = mulaProses('Sedang diimbas: ' + f.nama, senarai.length);
+  const ambil = g => ambilUntukImbas(g.id).then(muatImej);
+  const depan = [];                                   // gambar yang sedang dimuat turun lebih awal
+  for (let k = 0; k < Math.min(2, senarai.length); k++) depan.push(ambil(senarai[k]).catch(e => e));
+  let kotak = [], simpanan = Promise.resolve();
+  const hantar = () => { const items = kotak; kotak = []; simpanan = simpanan.then(() => simpanKelompok(f.id, items)).catch(e => { st.gagal += items.length; console.warn(e); }); };
+  for (let k = 0; k < senarai.length && !henti; k++) {
+    const g = senarai[k];
+    if (k + 2 < senarai.length) depan.push(ambil(senarai[k + 2]).catch(e => e));
+    try {
+      const im = await depan.shift();
+      if (im instanceof Error) throw im;
+      const c = kecilkan(im, 1600);
+      const faces = await kesanMuka(c);
+      kotak.push({ id: g.id, nama: g.nama, w: im.width, h: im.height, faces });
+      st.muka += faces.length; tambahStrip(kecilUrl(c), faces.length);
+      if (kotak.length >= 10) hantar();
+    } catch (e) { st.gagal++; console.warn(g.nama, e); }
+    st.siap++; st.kemas();
+  }
+  hantar(); await simpanan;
+  await tamatProses(st);
 }
 
 /* ---------- Upload dari laptop ---------- */
@@ -1156,16 +1182,28 @@ async function uploadFail(files) {
   const kunciF = f => folderId + '|' + f.name + '|' + f.size;
   const baru = files.filter(f => !siapSet.has(kunciF(f)));
   if (!baru.length) { $('errUpload').textContent = 'Semua gambar ini sudah pernah di-upload ke majlis ini.'; return; }
-  await jalanKolam('Sedang upload: ' + nama, baru, async file => {
-    const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
-    const besar = kecilkan(bmp, 2048);
-    if (bmp.close) bmp.close();
-    const faces = await kesanMuka(kecilkan(besar, 1600));
-    const blob = await new Promise(r => besar.toBlob(r, 'image/jpeg', 0.85));
-    await api('uploadGambar', { token, folderId, nama: file.name.replace(/\.[^.]+$/, '') + '.jpg', data: await keBase64(blob), w: besar.width, h: besar.height, faces });
-    siapSet.add(kunciF(file)); simpan(UP_SIAP, [...siapSet].slice(-20000));
-    return faces.length;
-  });
+  // Kesan muka 1 per 1 di laptop; hantar ke Drive di belakang tabir (maks 3 serentak)
+  const st = mulaProses('Sedang upload: ' + nama, baru.length);
+  const hantaran = new Set();
+  for (const file of baru) {
+    if (henti) break;
+    try {
+      const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+      const besar = kecilkan(bmp, 2048);
+      if (bmp.close) bmp.close();
+      const faces = await kesanMuka(kecilkan(besar, 1600));
+      const blob = await new Promise(r => besar.toBlob(r, 'image/jpeg', 0.85));
+      const data = await keBase64(blob), pratonton = kecilUrl(besar);
+      const kerja = api('uploadGambar', { token, folderId, nama: file.name.replace(/\.[^.]+$/, '') + '.jpg', data, w: besar.width, h: besar.height, faces })
+        .then(() => { st.muka += faces.length; tambahStrip(pratonton, faces.length); siapSet.add(kunciF(file)); simpan(UP_SIAP, [...siapSet].slice(-20000)); })
+        .catch(e => { st.gagal++; console.warn(file.name, e); })
+        .finally(() => { st.siap++; st.kemas(); hantaran.delete(kerja); });
+      hantaran.add(kerja);
+    } catch (e) { st.gagal++; st.siap++; st.kemas(); console.warn(file.name, e); }
+    while (hantaran.size >= 3) await Promise.race(hantaran);
+  }
+  await Promise.all(hantaran);
+  await tamatProses(st);
 }
 $('upFail').onchange = e => { uploadFail(e.target.files); e.target.value = ''; };
 $('upFolder').onchange = e => { uploadFail(e.target.files); e.target.value = ''; };
