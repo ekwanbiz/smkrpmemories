@@ -176,6 +176,10 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
 .strip span{position:absolute;right:3px;bottom:3px;padding:0 5px;border-radius:5px;background:rgba(255,255,255,.92);font-size:10px;font-weight:700;color:var(--navy)}
 .strip span.kosong{background:#fde8e8;color:#991b1b}
 @keyframes masuk{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+.pusing{width:64px;height:64px;border-radius:50%;border:6px solid var(--kuning2);border-top-color:var(--navy);margin:0 auto 18px;animation:putar 0.9s linear infinite}
+@keyframes putar{to{transform:rotate(360deg)}}
+.skeleton{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;margin-top:22px}
+.skeleton i{aspect-ratio:1;background:linear-gradient(90deg,#e9ecf4 0,#f6f7fb 50%,#e9ecf4 100%);background-size:200% 100%;animation:kilat 1.2s linear infinite}
 .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:50;background:var(--navy);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;max-width:90vw;text-align:center}
 .offline{background:#fde8e8;color:#7f1d1d;text-align:center;font-size:13px;padding:8px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -242,6 +246,12 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>
         <span id="lblSemua">Muat turun semua</span>
       </button>
+    </div>
+    <div id="sayaMencari" class="kosong hide" role="status" aria-live="polite">
+      <div class="pusing" aria-hidden="true"></div>
+      <h2>Mencari gambar anda…</h2>
+      <p class="mut" id="mencariTeks">Membandingkan muka anda dengan gambar majlis</p>
+      <div class="skeleton" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
     </div>
     <div id="sayaKosong" class="kosong hide">
       <div class="ikon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 8"/></svg></div>
@@ -667,15 +677,20 @@ let mencari = false;
 async function cari(b64) {
   mencari = true;
   location.hash = '#saya';
-  $('sayaAda').classList.add('hide'); $('sayaKosong').classList.remove('hide');
-  $('kosongTajuk').textContent = 'Mencari gambar anda…'; $('kosongTeks').textContent = 'Sebentar ya.';
+  $('sayaAda').classList.add('hide'); $('sayaKosong').classList.add('hide'); $('sayaMencari').classList.remove('hide');
+  $('btnSelfieSemula').classList.add('hide'); $('sayaInfo').textContent = '';
+  const ayat = ['Membandingkan muka anda dengan gambar majlis', 'Mengumpul gambar anda…', 'Hampir siap…'];
+  let ai = 0; $('mencariTeks').textContent = ayat[0];
+  const putarAyat = setInterval(() => { ai = Math.min(ayat.length - 1, ai + 1); $('mencariTeks').textContent = ayat[ai]; }, 2500);
+  const selesaiCari = () => { clearInterval(putarAyat); $('sayaMencari').classList.add('hide'); $('btnSelfieSemula').classList.remove('hide'); };
   try {
     const hasil = await api('cari', { desc: b64 });
     saya = { masa: Date.now(), hasil }; simpan('smkrp_saya', saya);
     tapis = (majlisQR && hasil.some(x => x.majlis === majlisQR)) ? majlisQR : 'Semua'; thumbCache.clear();
-    mencari = false; renderSaya();
+    mencari = false; selesaiCari(); renderSaya();
   } catch (e) {
-    mencari = false;
+    mencari = false; selesaiCari();
+    $('sayaKosong').classList.remove('hide');
     $('kosongTajuk').textContent = 'Carian gagal'; $('kosongTeks').textContent = e.message;
   }
 }
