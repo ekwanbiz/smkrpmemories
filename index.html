@@ -303,25 +303,6 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
     </div>
     <div id="admPanel" class="hide">
       <div class="astat" id="admStats"></div>
-      <div class="card">
-        <h2 style="margin-bottom:10px">Tambah folder majlis</h2>
-        <label class="f">Link folder Google Drive<input id="inLink" type="text" placeholder="https://drive.google.com/drive/folders/…"></label>
-        <label class="f">Nama majlis (kosong = guna nama folder)<input id="inNama" type="text" placeholder="Contoh: Hari Sukan 2025"></label>
-        <button id="btnTambah" class="btn penuh">Tambah &amp; mula imbas</button>
-        <div id="errTambah" class="err"></div>
-        <p class="mut" id="akaunNota" style="margin-bottom:0"></p>
-      </div>
-      <div class="card">
-        <h2 style="margin-bottom:6px">Upload dari laptop</h2>
-        <p class="mut" style="margin:0 0 12px">Gambar dikecilkan (2048px) dan diimbas di laptop, kemudian disimpan ke Google Drive. Terus boleh dicari.</p>
-        <label class="f">Majlis<select id="upMajlis"></select></label>
-        <label class="f hide" id="upBaruWrap">Nama majlis baru<input id="upBaru" type="text" placeholder="Contoh: Hari Kantin 2026"></label>
-        <div class="row">
-          <label class="btn kuning">Pilih gambar<input id="upFail" type="file" accept="image/*" multiple hidden></label>
-          <label class="btn alt">Pilih folder<input id="upFolder" type="file" webkitdirectory multiple hidden></label>
-        </div>
-        <div id="errUpload" class="err"></div>
-      </div>
       <div id="imbasCard" class="card hide">
         <h2 id="imbasTajuk">Sedang diimbas</h2>
         <div class="bar"><div id="imbasBar"></div></div>
@@ -329,6 +310,33 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
         <div id="imbasStrip" class="strip" aria-label="Gambar yang baru siap"></div>
         <p class="nota">Tips supaya laju: guna laptop dengan pengecas, biarkan tab ini di depan (jangan tukar tab), dan guna Wi-Fi yang stabil. Kalau terhenti, ulang semula — gambar yang siap tidak diulang.</p>
         <button id="btnHenti" class="btn alt kecil">Henti</button>
+      </div>
+      <div class="card">
+        <h2 style="margin-bottom:4px">Tambah gambar</h2>
+        <div class="tabs" role="tablist">
+          <button id="tabLaptop" class="on" role="tab" aria-selected="true">Dari laptop</button>
+          <button id="tabLink" role="tab" aria-selected="false">Dari link Google Drive</button>
+        </div>
+        <div id="panelLaptop">
+        <p class="mut" style="margin:0 0 12px">Pilih gambar dari laptop. Gambar dikecilkan (2048px), diimbas dan disimpan ke Google Drive — terus boleh dicari. <b>Cara paling laju.</b></p>
+        <label class="f">Majlis<select id="upMajlis"></select></label>
+        <label class="f hide" id="upBaruWrap">Nama majlis baru<input id="upBaru" type="text" placeholder="Contoh: Hari Kantin 2026"></label>
+        <div class="row">
+          <label class="btn kuning">Pilih gambar<input id="upFail" type="file" accept="image/*" multiple hidden></label>
+          <label class="btn alt">Pilih folder<input id="upFolder" type="file" webkitdirectory multiple hidden></label>
+        </div>
+        <div id="errUpload" class="err"></div>
+      
+        </div>
+        <div id="panelLink" class="hide">
+        <p class="mut" style="margin:0 0 12px">Untuk gambar yang sudah ada dalam Google Drive. App akan imbas semua gambar dalam folder (termasuk subfolder).</p>
+        <label class="f">Link folder Google Drive<input id="inLink" type="text" placeholder="https://drive.google.com/drive/folders/…"></label>
+        <label class="f">Nama majlis (kosong = guna nama folder)<input id="inNama" type="text" placeholder="Contoh: Hari Sukan 2025"></label>
+        <button id="btnTambah" class="btn penuh">Tambah &amp; mula imbas</button>
+        <div id="errTambah" class="err"></div>
+        <p class="mut" id="akaunNota" style="margin-bottom:0"></p>
+      
+        </div>
       </div>
       <div class="card">
         <h2>Folder majlis</h2>
@@ -986,6 +994,14 @@ const bacaKekal = k => { try { return localStorage.getItem(k) || sessionStorage.
 let token = bacaKekal('smkrp_tok');
 let folders = [], henti = false, sedangImbas = false;
 
+/* ---------- Tab tambah gambar ---------- */
+function tabTambah(t) {
+  $('tabLaptop').classList.toggle('on', t === 'laptop'); $('tabLink').classList.toggle('on', t === 'link');
+  $('tabLaptop').setAttribute('aria-selected', t === 'laptop'); $('tabLink').setAttribute('aria-selected', t === 'link');
+  $('panelLaptop').classList.toggle('hide', t !== 'laptop'); $('panelLink').classList.toggle('hide', t !== 'link');
+}
+$('tabLaptop').onclick = () => tabTambah('laptop');
+$('tabLink').onclick = () => tabTambah('link');
 /* ---------- Tindak balas butang ---------- */
 function sibuk(b, teks) {
   const asal = b.innerHTML;
@@ -1030,8 +1046,12 @@ async function admMuat() {
       <div class="row" style="margin-top:8px">
         <button class="btn kecil" data-act="galeri" data-id="${esc(f.id)}">Lihat gambar</button>
         <button class="btn alt kecil" data-act="qr" data-id="${esc(f.id)}">Kod QR</button>
-        <button class="btn alt kecil" data-act="imbas" data-id="${esc(f.id)}">Imbas</button>
-        <button class="btn alt kecil" data-act="${f.status === 'aktif' ? 'sembunyi' : 'aktif'}" data-id="${esc(f.id)}">${f.status === 'aktif' ? 'Sembunyi' : 'Tunjuk'}</button>
+      </div>
+      <div class="row" style="margin-top:6px;justify-content:space-between">
+        <div class="row" style="gap:6px">
+          <button class="btn alt kecil" data-act="imbas" data-id="${esc(f.id)}" title="Imbas gambar baru dalam folder Drive">Imbas semula</button>
+          <button class="btn alt kecil" data-act="${f.status === 'aktif' ? 'sembunyi' : 'aktif'}" data-id="${esc(f.id)}">${f.status === 'aktif' ? 'Sembunyi' : 'Tunjuk'}</button>
+        </div>
         <button class="btn merah kecil" data-act="buang" data-id="${esc(f.id)}">Buang</button>
       </div></div>`).join('') : '<p class="mut">Belum ada folder. Tambah link folder di atas.</p>';
 }
