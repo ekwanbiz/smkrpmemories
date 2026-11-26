@@ -904,27 +904,29 @@ addEventListener('keydown', e => {
 });
 
 /* ================= ADMIN ================= */
-let token = sessionStorage.getItem('smkrp_tok') || '';
+const simpanKekal = (k, v) => { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} };
+const bacaKekal = k => { try { return localStorage.getItem(k) || sessionStorage.getItem(k) || ''; } catch (e) { return ''; } };
+let token = bacaKekal('smkrp_tok');
 let folders = [], henti = false, sedangImbas = false;
 
 $('btnLogin').onclick = async () => {
   $('errLogin').textContent = ''; $('btnLogin').disabled = true;
   try {
     const r = await api('login', { pw: $('admPw').value });
-    token = r.token; sessionStorage.setItem('smkrp_tok', token);
-    sessionStorage.setItem('smkrp_akaun', r.akaun);
+    token = r.token; simpanKekal('smkrp_tok', token);
+    simpanKekal('smkrp_akaun', r.akaun);
     admMuat();
   } catch (e) { $('errLogin').textContent = e.message; }
   $('btnLogin').disabled = false;
 };
 $('admPw').onkeydown = e => { if (e.key === 'Enter') $('btnLogin').click(); };
-$('btnKeluar').onclick = () => { token = ''; sessionStorage.removeItem('smkrp_tok'); $('admPanel').classList.add('hide'); $('admLogin').classList.remove('hide'); };
+$('btnKeluar').onclick = () => { token = ''; simpanKekal('smkrp_tok', null); try { sessionStorage.removeItem('smkrp_tok'); } catch (e) {} $('admPanel').classList.add('hide'); $('admLogin').classList.remove('hide'); };
 
 async function admMuat() {
   try { folders = await api('folders', { token }); }
   catch (e) { $('btnKeluar').click(); $('errLogin').textContent = e.message; return; }
   $('admLogin').classList.add('hide'); $('admPanel').classList.remove('hide');
-  const ak = sessionStorage.getItem('smkrp_akaun');
+  const ak = bacaKekal('smkrp_akaun');
   $('akaunNota').textContent = ak ? 'Folder mesti dikongsi (Viewer) dengan ' + ak + ', atau "Anyone with the link".' : '';
   const g = folders.reduce((a, f) => a + f.gambar, 0), m = folders.reduce((a, f) => a + f.muka, 0);
   $('admStats').innerHTML = [[folders.length, 'Majlis'], [g.toLocaleString(), 'Gambar'], [m.toLocaleString(), 'Muka']]
