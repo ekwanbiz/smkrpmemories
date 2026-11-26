@@ -594,6 +594,8 @@ async function bukaKamera() {
 
 async function mulaSelfie() {
   $('errUtama').textContent = '';
+  // Kejutkan Apps Script & muatkan indeks sementara pengguna buat selfie
+  api('sedia').catch(e => { if (tiadaTindakan(e)) api('info').catch(() => {}); });
   if (location.hash) location.hash = '';
   $('kamera').classList.remove('hide'); $('gagalBox').classList.add('hide');
   cincin(0, ''); say('Menyediakan kamera…', 'Kali pertama mungkin ambil beberapa saat');
@@ -696,9 +698,11 @@ async function cari(b64) {
   const putarAyat = setInterval(() => { ai = Math.min(ayat.length - 1, ai + 1); $('mencariTeks').textContent = ayat[ai]; }, 2500);
   const selesaiCari = () => { clearInterval(putarAyat); $('sayaMencari').classList.add('hide'); $('btnSelfieSemula').classList.remove('hide'); };
   try {
-    const hasil = await api('cari', { desc: b64 });
+    const r = await api('cari', { desc: b64, denganThumb: true });
+    const hasil = Array.isArray(r) ? r : r.hasil;
+    if (!Array.isArray(r) && r.thumbs) Object.entries(r.thumbs).forEach(([id, u]) => { if (u) { thumbCache.set(id, u); simpanThumbTelefon(id, u); } });
     saya = { masa: Date.now(), hasil }; simpan('smkrp_saya', saya);
-    tapis = (majlisQR && hasil.some(x => x.majlis === majlisQR)) ? majlisQR : 'Semua'; thumbCache.clear();
+    tapis = (majlisQR && hasil.some(x => x.majlis === majlisQR)) ? majlisQR : 'Semua';
     mencari = false; selesaiCari(); renderSaya();
   } catch (e) {
     mencari = false; selesaiCari();
