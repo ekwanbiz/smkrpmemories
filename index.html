@@ -102,8 +102,14 @@ nav.bawah a.on i{background:var(--kuning2)}
 .fab{position:fixed;right:16px;bottom:calc(96px + env(safe-area-inset-bottom));z-index:4;min-height:52px;padding:0 20px;border-radius:999px;border:0;background:var(--kuning);color:var(--navy);font:600 15px Inter;display:flex;align-items:center;gap:8px;box-shadow:0 10px 24px rgba(19,32,92,.25);cursor:pointer}
 .kosong{text-align:center;padding:48px 24px}
 .kosong .ikon{width:88px;height:88px;border-radius:50%;background:var(--kuning2);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--navy)}
-details.padanan{margin:0 16px 6px;font-size:13px;color:var(--mut)}
-details.padanan summary{cursor:pointer;min-height:32px;display:flex;align-items:center}
+.padanan{margin:0 16px 12px;padding:12px 14px;background:#eef3ff;border:1px solid #cfdcff;border-radius:14px}
+.padanan .tajukP{display:flex;justify-content:space-between;align-items:baseline;font:600 14px Inter;color:var(--navy)}
+.padanan .tajukP span{font-weight:500;color:#3a52b8}
+.padanan .baris{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:var(--navy);margin-top:6px}
+.padanan small{display:block;color:var(--mut);font-size:12px;margin-top:6px;line-height:1.4}
+#thr{-webkit-appearance:none;appearance:none;height:8px;border-radius:4px;background:linear-gradient(90deg,#13205c,#5b7bef);outline:none}
+#thr::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#fff;border:4px solid #13205c;box-shadow:0 2px 6px rgba(19,32,92,.35);cursor:pointer}
+#thr::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:4px solid #13205c;cursor:pointer}
 input[type=range]{flex:1;accent-color:var(--navy)}
 
 /* Paparan penuh */
@@ -208,9 +214,11 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
         <div class="bar"><div id="muatBar"></div></div>
       </div>
       <div class="chips" id="chips"></div>
-      <details class="padanan"><summary>Laraskan ketepatan padanan</summary>
-        <div class="row" style="padding:4px 0 8px">Ketat <input id="thr" type="range" min="0.38" max="0.62" step="0.01" value="0.50" aria-label="Ketepatan padanan"> Longgar</div>
-      </details>
+      <div class="padanan">
+        <div class="tajukP">Ketepatan padanan <span id="thrLbl">Sederhana</span></div>
+        <div class="baris">Ketat <input id="thr" type="range" min="0.38" max="0.62" step="0.01" value="0.50" aria-label="Ketepatan padanan"> Longgar</div>
+        <small>Ada gambar orang lain? Gerak ke <b>Ketat</b>. Gambar sendiri tercicir? Gerak ke <b>Longgar</b>.</small>
+      </div>
       <div id="galeriSemua"></div>
       <div style="height:84px"></div>
       <button id="btnSemua" class="fab">
@@ -731,7 +739,9 @@ async function muatThumb(ids) {
   if (baki.length && !ralat) muatThumb(baki);
 }
 $('chips').onclick = e => { const b = e.target.closest('button[data-t]'); if (b) { tapis = b.dataset.t; renderSaya(); } };
-$('thr').oninput = renderSaya;
+const labelThr = () => { const v = +$('thr').value; $('thrLbl').textContent = v <= 0.44 ? 'Ketat' : v >= 0.56 ? 'Longgar' : 'Sederhana'; };
+$('thr').oninput = () => { labelThr(); renderSaya(); };
+labelThr();
 $('galeriSemua').onclick = e => { const b = e.target.closest('button[data-i]'); if (b) bukaLihat(+b.dataset.i); };
 function renderKadSaya() {
   const n = saya ? saya.hasil.filter(x => x.d <= 0.5).length : 0;
