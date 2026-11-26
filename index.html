@@ -163,6 +163,13 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
 .muatBox b{color:var(--navy);font-weight:600}
 .muatBox .bar{height:8px;margin:8px 0 0}
 .muatBox .bar div{background:linear-gradient(90deg,var(--navy),#3a52b8);transition:width .35s}
+.gaGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px;margin-top:12px;align-content:start;overflow-y:auto;flex:1;min-height:0}
+.gaGrid button{position:relative;aspect-ratio:1;border:0;padding:0;border-radius:10px;overflow:hidden;background:#e9ecf4;cursor:pointer}
+.gaGrid img{width:100%;height:100%;object-fit:cover;display:block}
+.gaGrid span{position:absolute;left:6px;bottom:6px;padding:2px 7px;border-radius:6px;background:rgba(255,255,255,.92);font-size:11px;font-weight:600;color:var(--navy)}
+.gaGrid span.kosong{background:#fde8e8;color:#991b1b}
+.bannerMajlis{margin:14px 16px 0;padding:12px 14px;border-radius:14px;background:var(--kuning2);color:var(--navy);display:flex;gap:10px;align-items:center;font-size:14px}
+.modal.tengah{align-items:center}
 .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:50;background:var(--navy);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;max-width:90vw;text-align:center}
 .offline{background:#fde8e8;color:#7f1d1d;text-align:center;font-size:13px;padding:8px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -182,6 +189,10 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
     <div class="hero">
       <div class="mut" id="hdrKecil">Kenangan sekolah anda</div>
       <h1>Satu selfie,<br>semua gambar anda.</h1>
+    </div>
+    <div id="bannerMajlis" class="bannerMajlis hide" role="status">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+      <div><b id="bannerNama"></b><div style="font-size:13px">Buat selfie untuk cari gambar anda di majlis ini.</div></div>
     </div>
     <div class="selfieBtn">
       <button id="btnMula" class="bulat" aria-label="Mula selfie" disabled>
@@ -383,6 +394,36 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
     <p class="mut" id="sediaTeks" style="margin:6px 0 14px"></p>
     <button id="btnSimpanGaleri" class="btn kuning penuh">Simpan ke galeri</button>
     <button id="btnSediaBatal" class="btn alt penuh" style="margin-top:8px">Batal</button>
+  </div>
+</div>
+<div id="galeriAdm" class="modal" role="dialog" aria-modal="true" aria-labelledby="gaTajuk">
+  <div class="sheet" style="max-width:960px;height:92vh;display:flex;flex-direction:column">
+    <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
+      <div><h2 id="gaTajuk">Galeri</h2><div class="mut" id="gaInfo"></div></div>
+      <button class="bulatKecil" id="gaTutup" style="background:#eef1f8;color:var(--navy)" aria-label="Tutup"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
+    </div>
+    <div id="gaGrid" class="gaGrid"></div>
+    <button id="gaLagi" class="btn alt penuh hide" style="margin-top:10px">Muat lagi</button>
+  </div>
+</div>
+<div id="gaLihat" class="modal tengah" role="dialog" aria-modal="true" style="z-index:45;background:rgba(0,0,0,.88)">
+  <div style="max-width:94vw;text-align:center;color:#fff">
+    <img id="gaImg" alt="Pratonton gambar" style="max-width:94vw;max-height:76vh;border-radius:10px;display:block;margin:0 auto">
+    <p id="gaKet" style="margin:10px 0"></p>
+    <button id="gaLihatTutup" class="btn alt">Tutup</button>
+  </div>
+</div>
+<div id="qrModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="qrTajuk">
+  <div class="sheet" style="text-align:center">
+    <h2 id="qrTajuk">Kod QR</h2>
+    <p class="mut" style="margin:4px 0 0">Imbas kod ini untuk cari gambar anda di majlis ini.</p>
+    <div id="qrBox" style="width:min(240px,70vw);aspect-ratio:1;margin:14px auto"></div>
+    <p class="mut" id="qrLink" style="word-break:break-all;font-size:12px;margin:0 0 12px"></p>
+    <div class="row" style="justify-content:center">
+      <button id="qrMuat" class="btn kuning">Muat turun QR</button>
+      <button id="qrCetak" class="btn alt">Cetak poster</button>
+    </div>
+    <button id="qrTutup" class="btn alt penuh" style="margin-top:8px">Tutup</button>
   </div>
 </div>
 <div id="toast" class="toast hide" role="status"></div>
@@ -614,7 +655,7 @@ async function cari(b64) {
   try {
     const hasil = await api('cari', { desc: b64 });
     saya = { masa: Date.now(), hasil }; simpan('smkrp_saya', saya);
-    tapis = 'Semua'; thumbCache.clear();
+    tapis = (majlisQR && hasil.some(x => x.majlis === majlisQR)) ? majlisQR : 'Semua'; thumbCache.clear();
     mencari = false; renderSaya();
   } catch (e) {
     mencari = false;
@@ -936,6 +977,8 @@ async function admMuat() {
       <div class="row" style="justify-content:space-between"><b>${esc(f.nama)}</b><span class="chip ${f.status === 'aktif' ? 'aktif' : 'sembunyi'}">${f.status === 'aktif' ? 'Boleh dicari' : 'Disembunyikan'}</span></div>
       <div class="mut">${f.gambar} gambar · ${f.muka} muka</div>
       <div class="row" style="margin-top:8px">
+        <button class="btn kecil" data-act="galeri" data-id="${esc(f.id)}">Lihat gambar</button>
+        <button class="btn alt kecil" data-act="qr" data-id="${esc(f.id)}">Kod QR</button>
         <button class="btn alt kecil" data-act="imbas" data-id="${esc(f.id)}">Imbas</button>
         <button class="btn alt kecil" data-act="${f.status === 'aktif' ? 'sembunyi' : 'aktif'}" data-id="${esc(f.id)}">${f.status === 'aktif' ? 'Sembunyi' : 'Tunjuk'}</button>
         <button class="btn merah kecil" data-act="buang" data-id="${esc(f.id)}">Buang</button>
@@ -946,6 +989,8 @@ $('admRows').onclick = async e => {
   const f = folders.find(x => x.id === b.dataset.id); if (!f) return;
   const act = b.dataset.act;
   if (act === 'imbas') return imbas(f);
+  if (act === 'galeri') return bukaGaleri(f);
+  if (act === 'qr') return bukaQR(f);
   if (act === 'buang') {
     if (!(await sahkan('Buang "' + f.nama + '"?', 'Data imbasan majlis ini akan dipadam dan gambarnya tidak boleh dicari lagi. Gambar asal dalam Google Drive tidak terusik.'))) return;
     b.disabled = true; try { await api('buang', { token, folderId: f.id }); await binaIndeks(); } catch (err) { $('errTambah').textContent = err.message; }
@@ -1114,6 +1159,99 @@ $('btnHenti').onclick = () => {
   toast('Menghabiskan gambar yang sedang diproses, kemudian berhenti.');
 };
 async function binaIndeks() { try { await api('binaIndeks', { token }); } catch (e) { console.warn('Indeks:', e.message); } }
+
+/* ---------- Galeri admin ---------- */
+let gaFolder = null, gaMula = 0, gaJumlah = 0, gaJalan = false;
+async function bukaGaleri(f) {
+  gaFolder = f; gaMula = 0; gaJumlah = 0;
+  $('gaTajuk').textContent = f.nama; $('gaInfo').textContent = 'Memuatkan…'; $('gaGrid').innerHTML = '';
+  $('gaLagi').classList.add('hide'); $('galeriAdm').classList.add('on');
+  await gaMuatLagi();
+}
+async function gaMuatLagi() {
+  if (gaJalan || !gaFolder) return;
+  gaJalan = true; $('gaLagi').disabled = true;
+  try {
+    const r = await api('galeriFolder', { token, folderId: gaFolder.id, mula: gaMula, had: 48 });
+    gaJumlah = r.jumlah; gaMula += r.gambar.length;
+    const tiadaMuka = r.gambar.filter(g => !g.muka).length;
+    $('gaInfo').textContent = `${gaJumlah} gambar${gaMula < gaJumlah ? ' · dipapar ' + gaMula : ''}`;
+    $('gaGrid').insertAdjacentHTML('beforeend', r.gambar.map(g => `<button data-id="${esc(g.id)}" data-nama="${esc(g.nama)}" data-muka="${g.muka}" aria-label="${esc(g.nama)}"><img alt="" data-ga="${esc(g.id)}"><span class="${g.muka ? '' : 'kosong'}">${g.muka} muka</span></button>`).join(''));
+    if (!gaJumlah) $('gaGrid').innerHTML = '<p class="mut">Belum ada gambar dalam majlis ini.</p>';
+    $('gaLagi').classList.toggle('hide', gaMula >= gaJumlah);
+    const ids = r.gambar.map(g => g.id);
+    for (let i = 0; i < ids.length; i += 12) {
+      const part = ids.slice(i, i + 12);
+      api('thumbsAdmin', { token, ids: part }).then(urls => part.forEach((id, k) => {
+        const im = $('gaGrid').querySelector(`img[data-ga="${CSS.escape(id)}"]`); if (im && urls[k]) im.src = urls[k];
+      })).catch(e => console.warn(e));
+    }
+  } catch (e) { $('gaInfo').textContent = 'Ralat: ' + (tiadaTindakan(e) ? 'kemas kini Code.gs dahulu.' : e.message); }
+  gaJalan = false; $('gaLagi').disabled = false;
+}
+$('gaLagi').onclick = gaMuatLagi;
+$('gaTutup').onclick = () => $('galeriAdm').classList.remove('on');
+$('gaGrid').onclick = async e => {
+  const b = e.target.closest('button[data-id]'); if (!b) return;
+  const kecil = b.querySelector('img').src;
+  $('gaImg').src = kecil || ''; $('gaKet').textContent = b.dataset.nama + ' · ' + b.dataset.muka + ' muka dikesan';
+  $('gaLihat').classList.add('on');
+  try { const u = await api('thumbsAdmin', { token, ids: [b.dataset.id], saiz: 1600 }); if (u[0] && $('gaLihat').classList.contains('on')) $('gaImg').src = u[0]; } catch (err) {}
+};
+$('gaLihatTutup').onclick = () => $('gaLihat').classList.remove('on');
+$('gaLihat').onclick = e => { if (e.target.id === 'gaLihat') $('gaLihat').classList.remove('on'); };
+
+/* ---------- Kod QR majlis ---------- */
+const muatSkrip = src => new Promise((ok, no) => { const sk = document.createElement('script'); sk.src = src; sk.onload = ok; sk.onerror = no; document.head.appendChild(sk); });
+let qrSemasa = null;
+const pautanApp = () => location.origin + location.pathname.replace(/index\.html$/, '');
+async function bukaQR(f) {
+  try { if (!window.qrcode) await muatSkrip('https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js'); }
+  catch (e) { toast('Gagal memuatkan penjana QR. Semak internet.'); return; }
+  const link = pautanApp() + '?majlis=' + encodeURIComponent(f.nama);
+  const qr = qrcode(0, 'M'); qr.addData(link); qr.make();
+  qrSemasa = { qr, link, nama: f.nama };
+  $('qrTajuk').textContent = f.nama; $('qrLink').textContent = link;
+  $('qrBox').innerHTML = qr.createSvgTag({ cellSize: 8, margin: 2, scalable: true });
+  const svg = $('qrBox').querySelector('svg'); if (svg) { svg.style.width = '100%'; svg.style.height = '100%'; }
+  $('qrModal').classList.add('on');
+}
+function lukisQR(px) {
+  const { qr } = qrSemasa, n = qr.getModuleCount(), tepi = 4, sel = Math.floor(px / (n + tepi * 2));
+  const c = document.createElement('canvas'); c.width = c.height = sel * (n + tepi * 2);
+  const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.fillStyle = '#13205c';
+  for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (qr.isDark(r, k)) x.fillRect((k + tepi) * sel, (r + tepi) * sel, sel, sel);
+  return c;
+}
+$('qrMuat').onclick = () => {
+  if (!qrSemasa) return;
+  const a = document.createElement('a'); a.href = lukisQR(1024).toDataURL('image/png');
+  a.download = 'QR_' + qrSemasa.nama.replace(/[^\w-]+/g, '_') + '.png'; document.body.appendChild(a); a.click(); a.remove();
+};
+$('qrCetak').onclick = () => {
+  if (!qrSemasa) return;
+  const w = window.open('', '_blank'); if (!w) { toast('Benarkan pop-up untuk cetak poster.'); return; }
+  const qrUrl = lukisQR(1200).toDataURL('image/png'), logo = pautanApp() + 'logo.png';
+  w.document.write(`<!DOCTYPE html><html lang="ms"><head><meta charset="utf-8"><title>Poster ${esc(qrSemasa.nama)}</title>
+<style>@page{size:A4;margin:14mm}body{font-family:Inter,Arial,sans-serif;color:#13205c;text-align:center;margin:0}
+.logo{width:90px;margin-top:10px}h1{font-size:38px;margin:10px 0 0}h1 span{color:#b38f00}
+h2{font-size:26px;margin:6px 0 18px;color:#111}.qr{width:62%;max-width:120mm;border:6px solid #ffe14d;border-radius:18px}
+ol{display:inline-block;text-align:left;font-size:18px;line-height:1.7;margin:18px 0 8px}.link{font-size:12px;color:#5b6478;word-break:break-all}</style></head>
+<body><img class="logo" src="${logo}" alt=""><h1>SMKRP <span>Memories</span></h1><h2>${esc(qrSemasa.nama)}</h2>
+<img class="qr" src="${qrUrl}" alt="Kod QR"><ol><li>Imbas kod QR dengan kamera telefon</li><li>Buat selfie &amp; kelip mata</li><li>Lihat &amp; simpan gambar anda</li></ol>
+<p class="link">${esc(qrSemasa.link)}</p><script>onload=()=>setTimeout(()=>print(),400)<\/script></body></html>`);
+  w.document.close();
+};
+$('qrTutup').onclick = () => $('qrModal').classList.remove('on');
+
+/* ---------- Pengguna datang dari kod QR majlis ---------- */
+let majlisQR = '';
+try {
+  const m = new URLSearchParams(location.search).get('majlis');
+  if (m) { majlisQR = m.slice(0, 120); sessionStorage.setItem('smkrp_majlis', majlisQR); }
+  else majlisQR = sessionStorage.getItem('smkrp_majlis') || '';
+} catch (e) {}
+if (majlisQR) { $('bannerNama').textContent = 'Majlis: ' + majlisQR; $('bannerMajlis').classList.remove('hide'); }
 
 /* ================= PASANG (PWA) ================= */
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
