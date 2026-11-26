@@ -1007,6 +1007,7 @@ async function simpanKelompok(folderId, items) {
 }
 async function jalanKolam(tajuk, senarai, kerjaSatu, selepas) {
   sedangImbas = true; henti = false;
+  $('btnHenti').disabled = false; $('btnHenti').textContent = 'Henti';
   let kunci = null; try { kunci = await navigator.wakeLock.request('screen'); } catch (e) {}
   $('imbasCard').classList.remove('hide'); $('imbasTajuk').textContent = tajuk;
   $('imbasBar').style.width = '0%';
@@ -1030,7 +1031,9 @@ async function jalanKolam(tajuk, senarai, kerjaSatu, selepas) {
   const asal = $('imbasTeks').textContent;
   $('imbasTeks').textContent = asal + ' · Mengemas kini indeks carian…';
   await binaIndeks();
-  $('imbasTeks').textContent = asal + (henti ? ' · Dihentikan.' : ' · Siap! Gambar sudah boleh dicari.');
+  $('imbasTeks').textContent = asal + (henti ? ' · Dihentikan. Gambar yang siap sudah boleh dicari.' : ' · Siap! Gambar sudah boleh dicari.');
+  if (henti) $('imbasTajuk').textContent = 'Dihentikan';
+  $('btnHenti').disabled = true; $('btnHenti').textContent = 'Selesai';
   try { kunci && kunci.release(); } catch (e) {}
   sedangImbas = false;
   admMuat();
@@ -1103,7 +1106,13 @@ async function uploadFail(files) {
 }
 $('upFail').onchange = e => { uploadFail(e.target.files); e.target.value = ''; };
 $('upFolder').onchange = e => { uploadFail(e.target.files); e.target.value = ''; };
-$('btnHenti').onclick = () => { henti = true; };
+$('btnHenti').onclick = () => {
+  if (!sedangImbas || henti) return;
+  henti = true;
+  $('btnHenti').disabled = true; $('btnHenti').textContent = 'Menghentikan…';
+  $('imbasTajuk').textContent = 'Menghentikan… tunggu sebentar';
+  toast('Menghabiskan gambar yang sedang diproses, kemudian berhenti.');
+};
 async function binaIndeks() { try { await api('binaIndeks', { token }); } catch (e) { console.warn('Indeks:', e.message); } }
 
 /* ================= PASANG (PWA) ================= */
