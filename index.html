@@ -180,6 +180,10 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
 @keyframes putar{to{transform:rotate(360deg)}}
 .skeleton{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;margin-top:22px}
 .skeleton i{aspect-ratio:1;background:linear-gradient(90deg,#e9ecf4 0,#f6f7fb 50%,#e9ecf4 100%);background-size:200% 100%;animation:kilat 1.2s linear infinite}
+.btn,.pil,.bulatKecil,.chips button,.galeri button,.gaGrid button,.aksi button,.tabs button{transition:transform .08s ease,filter .15s}
+.btn:active:not(:disabled),.pil:active,.bulatKecil:active,.chips button:active,.galeri button:active,.gaGrid button:active,.aksi button:active:not(:disabled),.tabs button:active{transform:scale(.96);filter:brightness(.92)}
+.btn.sibuk{pointer-events:none;opacity:.85}
+.btn.sibuk::before{content:"";width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:putar .7s linear infinite;flex:none}
 .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:50;background:var(--navy);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;max-width:90vw;text-align:center}
 .offline{background:#fde8e8;color:#7f1d1d;text-align:center;font-size:13px;padding:8px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -982,15 +986,22 @@ const bacaKekal = k => { try { return localStorage.getItem(k) || sessionStorage.
 let token = bacaKekal('smkrp_tok');
 let folders = [], henti = false, sedangImbas = false;
 
+/* ---------- Tindak balas butang ---------- */
+function sibuk(b, teks) {
+  const asal = b.innerHTML;
+  b.disabled = true; b.classList.add('sibuk'); b.textContent = teks;
+  return () => { b.disabled = false; b.classList.remove('sibuk'); b.innerHTML = asal; };
+}
 $('btnLogin').onclick = async () => {
-  $('errLogin').textContent = ''; $('btnLogin').disabled = true;
+  $('errLogin').textContent = '';
+  const pulih = sibuk($('btnLogin'), 'Log masuk…');
   try {
     const r = await api('login', { pw: $('admPw').value });
     token = r.token; simpanKekal('smkrp_tok', token);
     simpanKekal('smkrp_akaun', r.akaun);
-    admMuat();
+    await admMuat(); toast('Berjaya log masuk.');
   } catch (e) { $('errLogin').textContent = e.message; }
-  $('btnLogin').disabled = false;
+  pulih();
 };
 $('admCubaLagi').onclick = () => { $('admMuatanTeks').textContent = 'Memuatkan halaman admin…'; $('admCubaLagi').classList.add('hide'); admMuat(); };
 $('admPw').onkeydown = e => { if (e.key === 'Enter') $('btnLogin').click(); };
@@ -1028,26 +1039,39 @@ $('admRows').onclick = async e => {
   const b = e.target.closest('button[data-act]'); if (!b) return;
   const f = folders.find(x => x.id === b.dataset.id); if (!f) return;
   const act = b.dataset.act;
-  if (act === 'imbas') return imbas(f);
+  if (act === 'imbas') { if (sedangImbas) return toast('Tunggu proses semasa selesai dahulu.'); toast('Menyemak gambar baru dalam "' + f.nama + '"…'); return imbas(f); }
   if (act === 'galeri') return bukaGaleri(f);
-  if (act === 'qr') return bukaQR(f);
+  if (act === 'qr') { const pulihQ = sibuk(b, 'Menjana…'); await bukaQR(f); return pulihQ(); }
   if (act === 'buang') {
-    if (!(await sahkan('Buang "' + f.nama + '"?', 'Data imbasan majlis ini akan dipadam dan gambarnya tidak boleh dicari lagi. Gambar asal dalam Google Drive tidak terusik.'))) return;
-    b.disabled = true; try { await api('buang', { token, folderId: f.id }); await binaIndeks(); } catch (err) { $('errTambah').textContent = err.message; }
+    if (!(await sahkan('Buang "' + f.nama + '"?', 'Data imbasan majlis ini akan dipadam dan gambarnya tidak boleh dicari lagi. Gambar asal dalam Google Drive tidak terusik.'))) return toast('Dibatalkan.');
+    const pulih = sibuk(b, 'Membuang…');
+    try {
+      await api('buang', { token, folderId: f.id });
+      toast('"' + f.nama + '" dibuang. Mengemas kini indeks…');
+      await binaIndeks();
+      toast('"' + f.nama + '" telah dibuang.');
+    } catch (err) { pulih(); toast('Gagal membuang: ' + err.message); return; }
   } else {
-    b.disabled = true; try { await api('setStatus', { token, folderId: f.id, status: act }); } catch (err) { $('errTambah').textContent = err.message; }
+    const pulih = sibuk(b, 'Menyimpan…');
+    try {
+      await api('setStatus', { token, folderId: f.id, status: act });
+      toast(act === 'aktif' ? '"' + f.nama + '" kini boleh dicari.' : '"' + f.nama + '" disembunyikan.');
+    } catch (err) { pulih(); toast('Gagal: ' + err.message); return; }
   }
   admMuat();
 };
 $('btnTambah').onclick = async () => {
-  $('errTambah').textContent = ''; $('btnTambah').disabled = true;
+  $('errTambah').textContent = '';
+  if (!$('inLink').value.trim()) { $('errTambah').textContent = 'Tampal link folder Google Drive dahulu.'; $('inLink').focus(); return; }
+  const pulih = sibuk($('btnTambah'), 'Menambah folder…');
   try {
     const r = await api('tambahFolder', { token, link: $('inLink').value.trim(), nama: $('inNama').value.trim() });
     $('inLink').value = ''; $('inNama').value = '';
+    toast(r.baru ? '"' + r.nama + '" ditambah. Mula mengimbas…' : '"' + r.nama + '" sudah ada. Menyemak gambar baru…');
     await admMuat();
     const f = folders.find(x => x.id === r.id); if (f) imbas(f);
   } catch (e) { $('errTambah').textContent = e.message; }
-  $('btnTambah').disabled = false;
+  pulih();
 };
 function sahkan(tajuk, teks) {
   return new Promise(ok => {
@@ -1260,7 +1284,7 @@ async function gaMuatLagi() {
   } catch (e) { $('gaInfo').textContent = 'Ralat: ' + (tiadaTindakan(e) ? 'kemas kini Code.gs dahulu.' : e.message); }
   gaJalan = false; $('gaLagi').disabled = false;
 }
-$('gaLagi').onclick = gaMuatLagi;
+$('gaLagi').onclick = async () => { const pulih = sibuk($('gaLagi'), 'Memuatkan…'); await gaMuatLagi(); pulih(); };
 $('gaTutup').onclick = () => $('galeriAdm').classList.remove('on');
 $('gaGrid').onclick = async e => {
   const b = e.target.closest('button[data-id]'); if (!b) return;
@@ -1296,12 +1320,14 @@ function lukisQR(px) {
 }
 $('qrMuat').onclick = () => {
   if (!qrSemasa) return;
+  toast('Kod QR dimuat turun.');
   const a = document.createElement('a'); a.href = lukisQR(1024).toDataURL('image/png');
   a.download = 'QR_' + qrSemasa.nama.replace(/[^\w-]+/g, '_') + '.png'; document.body.appendChild(a); a.click(); a.remove();
 };
 $('qrCetak').onclick = () => {
   if (!qrSemasa) return;
   const w = window.open('', '_blank'); if (!w) { toast('Benarkan pop-up untuk cetak poster.'); return; }
+  toast('Membuka poster untuk dicetak…');
   const qrUrl = lukisQR(1200).toDataURL('image/png'), logo = pautanApp() + 'logo.png';
   w.document.write(`<!DOCTYPE html><html lang="ms"><head><meta charset="utf-8"><title>Poster ${esc(qrSemasa.nama)}</title>
 <style>@page{size:A4;margin:14mm}body{font-family:Inter,Arial,sans-serif;color:#13205c;text-align:center;margin:0}
