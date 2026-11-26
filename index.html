@@ -131,7 +131,7 @@ input[type=range]{flex:1;accent-color:var(--navy)}
 .ikonT{display:inline-flex;vertical-align:middle;padding:1px 6px;border-radius:6px;background:#eef2fb;font-weight:600;font-size:14px}
 ol{margin:6px 0 0;padding-left:22px}li{margin:4px 0}
 label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;margin-bottom:12px}
-input[type=text],input[type=password]{min-height:46px;padding:0 12px;border-radius:10px;border:1.5px solid #cdd5e4;font:16px Inter}
+select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;border-radius:10px;border:1.5px solid #cdd5e4;font:16px Inter;background:#fff;color:var(--ink)}
 .bar{height:12px;background:#e6ebf5;border-radius:6px;overflow:hidden;margin:10px 0}
 .bar div{height:100%;width:0;background:var(--navy);transition:width .2s}
 .astat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 16px 14px}
@@ -268,11 +268,22 @@ input[type=text],input[type=password]{min-height:46px;padding:0 12px;border-radi
         <div id="errTambah" class="err"></div>
         <p class="mut" id="akaunNota" style="margin-bottom:0"></p>
       </div>
+      <div class="card">
+        <h2 style="margin-bottom:6px">Upload dari laptop</h2>
+        <p class="mut" style="margin:0 0 12px">Gambar dikecilkan (2048px) dan diimbas di laptop, kemudian disimpan ke Google Drive. Terus boleh dicari.</p>
+        <label class="f">Majlis<select id="upMajlis"></select></label>
+        <label class="f hide" id="upBaruWrap">Nama majlis baru<input id="upBaru" type="text" placeholder="Contoh: Hari Kantin 2026"></label>
+        <div class="row">
+          <label class="btn kuning">Pilih gambar<input id="upFail" type="file" accept="image/*" multiple hidden></label>
+          <label class="btn alt">Pilih folder<input id="upFolder" type="file" webkitdirectory multiple hidden></label>
+        </div>
+        <div id="errUpload" class="err"></div>
+      </div>
       <div id="imbasCard" class="card hide">
         <h2 id="imbasTajuk">Sedang diimbas</h2>
         <div class="bar"><div id="imbasBar"></div></div>
         <p class="mut" id="imbasTeks"></p>
-        <p class="nota">Biarkan skrin ini terbuka. Kalau terhenti, tekan "Imbas" semula — gambar yang siap tidak diulang.</p>
+        <p class="nota">Tips supaya laju: guna laptop dengan pengecas, biarkan tab ini di depan (jangan tukar tab), dan guna Wi-Fi yang stabil. Kalau terhenti, ulang semula — gambar yang siap tidak diulang.</p>
         <button id="btnHenti" class="btn alt kecil">Henti</button>
       </div>
       <div class="card">
@@ -908,6 +919,7 @@ async function admMuat() {
   const g = folders.reduce((a, f) => a + f.gambar, 0), m = folders.reduce((a, f) => a + f.muka, 0);
   $('admStats').innerHTML = [[folders.length, 'Majlis'], [g.toLocaleString(), 'Gambar'], [m.toLocaleString(), 'Muka']]
     .map(s => `<div><b>${s[0]}</b><span class="mut">${s[1]}</span></div>`).join('');
+  isiPilihanMajlis();
   $('admRows').innerHTML = folders.length ? folders.map(f => `<div class="folder">
       <div class="row" style="justify-content:space-between"><b>${esc(f.nama)}</b><span class="chip ${f.status === 'aktif' ? 'aktif' : 'sembunyi'}">${f.status === 'aktif' ? 'Boleh dicari' : 'Disembunyikan'}</span></div>
       <div class="mut">${f.gambar} gambar · ${f.muka} muka</div>
@@ -955,46 +967,130 @@ function kecilkan(im, max) {
   c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
   return c;
 }
-async function imbas(f) {
-  if (sedangImbas) return;
-  if (!modelSedia) { $('errTambah').textContent = 'Model muka masih dimuatkan. Cuba sebentar lagi.'; return; }
+/* ---------- Enjin imbas & upload (3 serentak, simpan berkelompok) ---------- */
+const SERENTAK = 3;
+let ringanTiada = false, kelompokTiada = false;
+async function kesanMuka(c) {
+  const dets = await faceapi.detectAllFaces(c, ssdOpt(0.4)).withFaceLandmarks().withFaceDescriptors();
+  return dets.map(d => {
+    const b = d.detection.box;
+    return { box: [b.x / c.width, b.y / c.height, b.width / c.width, b.height / c.height].map(v => +v.toFixed(4)), b64: kuantum(d.descriptor) };
+  });
+}
+const tiadaTindakan = e => /Tindakan tidak dikenali/.test(String(e && e.message));
+async function ambilUntukImbas(id) {
+  if (!ringanTiada) {
+    try { return await api('ambilRingan', { token, id }); }
+    catch (e) { if (!tiadaTindakan(e)) throw e; ringanTiada = true; }
+  }
+  return api('ambil', { token, id });
+}
+async function simpanKelompok(folderId, items) {
+  if (!items.length) return;
+  if (!kelompokTiada) {
+    try { await api('simpanBanyak', { token, folderId, items }); return; }
+    catch (e) { if (!tiadaTindakan(e)) throw e; kelompokTiada = true; }
+  }
+  for (const it of items) await api('simpan', { token, folderId, id: it.id, nama: it.nama, w: it.w, h: it.h, faces: it.faces });
+}
+async function jalanKolam(tajuk, senarai, kerjaSatu, selepas) {
   sedangImbas = true; henti = false;
   let kunci = null; try { kunci = await navigator.wakeLock.request('screen'); } catch (e) {}
-  $('imbasCard').classList.remove('hide'); $('imbasTajuk').textContent = 'Sedang diimbas: ' + f.nama;
-  $('imbasBar').style.width = '0%'; $('imbasTeks').textContent = 'Menyenaraikan gambar dalam folder…';
-  let senarai;
-  try { senarai = await api('belum', { token, folderId: f.id }); }
-  catch (e) { $('imbasTeks').textContent = 'Ralat: ' + e.message; sedangImbas = false; return; }
-  const t0 = Date.now(); let siap = 0, muka = 0, gagalN = 0;
-  for (const g of senarai) {
-    if (henti) break;
-    try {
-      const im = await muatImej(await api('ambil', { token, id: g.id }));
-      const c = kecilkan(im, 1600);
-      const dets = await faceapi.detectAllFaces(c, ssdOpt(0.4)).withFaceLandmarks().withFaceDescriptors();
-      const faces = dets.map(d => {
-        const b = d.detection.box;
-        return { box: [b.x / c.width, b.y / c.height, b.width / c.width, b.height / c.height].map(v => +v.toFixed(4)), b64: kuantum(d.descriptor) };
-      });
-      await api('simpan', { token, folderId: f.id, id: g.id, nama: g.nama, w: im.width, h: im.height, faces });
-      muka += faces.length;
-    } catch (e) { gagalN++; console.warn(g.nama, e); }
-    siap++;
-    const baki = Math.round((Date.now() - t0) / siap * (senarai.length - siap) / 1000);
-    $('imbasBar').style.width = (100 * siap / senarai.length) + '%';
-    $('imbasTeks').textContent = `${siap} / ${senarai.length} gambar · ${muka} muka${gagalN ? ' · ' + gagalN + ' gagal' : ''} · baki ± ${baki >= 60 ? Math.round(baki / 60) + ' min' : baki + ' saat'}`;
-  }
-  if (!senarai.length) $('imbasTeks').textContent = 'Tiada gambar baru untuk diimbas.';
-  else {
-    const asal = $('imbasTeks').textContent;
-    $('imbasTeks').textContent = asal + ' · Mengemas kini indeks carian…';
-    await binaIndeks();
-    $('imbasTeks').textContent = asal + (henti ? ' · Dihentikan.' : ' · Siap! Indeks carian dikemas kini.');
-  }
+  $('imbasCard').classList.remove('hide'); $('imbasTajuk').textContent = tajuk;
+  $('imbasBar').style.width = '0%';
+  const st = { siap: 0, muka: 0, gagal: 0 }, t0 = Date.now();
+  const kemas = () => {
+    const baki = st.siap ? Math.round((Date.now() - t0) / st.siap * (senarai.length - st.siap) / 1000) : 0;
+    $('imbasBar').style.width = (100 * st.siap / senarai.length) + '%';
+    $('imbasTeks').textContent = `${st.siap} / ${senarai.length} gambar · ${st.muka} muka${st.gagal ? ' · ' + st.gagal + ' gagal' : ''}${st.siap ? ' · baki ± ' + (baki >= 60 ? Math.round(baki / 60) + ' min' : baki + ' saat') : ''}`;
+  };
+  kemas();
+  let i = 0;
+  const pekerja = async () => {
+    while (i < senarai.length && !henti) {
+      const g = senarai[i++];
+      try { st.muka += await kerjaSatu(g); } catch (e) { st.gagal++; console.warn(g.nama || g.name, e); }
+      st.siap++; kemas();
+    }
+  };
+  await Promise.all(Array.from({ length: SERENTAK }, pekerja));
+  try { if (selepas) await selepas(); } catch (e) { st.gagal++; console.warn(e); }
+  const asal = $('imbasTeks').textContent;
+  $('imbasTeks').textContent = asal + ' · Mengemas kini indeks carian…';
+  await binaIndeks();
+  $('imbasTeks').textContent = asal + (henti ? ' · Dihentikan.' : ' · Siap! Gambar sudah boleh dicari.');
   try { kunci && kunci.release(); } catch (e) {}
   sedangImbas = false;
   admMuat();
 }
+
+async function imbas(f) {
+  if (sedangImbas) return;
+  if (!modelSedia) { $('errTambah').textContent = 'Model muka masih dimuatkan. Cuba sebentar lagi.'; return; }
+  $('imbasCard').classList.remove('hide'); $('imbasTajuk').textContent = 'Sedang diimbas: ' + f.nama;
+  $('imbasBar').style.width = '0%'; $('imbasTeks').textContent = 'Menyenaraikan gambar dalam folder…';
+  let senarai;
+  try { senarai = await api('belum', { token, folderId: f.id }); }
+  catch (e) { $('imbasTeks').textContent = 'Ralat: ' + e.message; return; }
+  if (!senarai.length) { $('imbasTeks').textContent = 'Tiada gambar baru untuk diimbas.'; return; }
+  const kotak = [];
+  const flush = async (semua) => { while (kotak.length >= 10 || (semua && kotak.length)) await simpanKelompok(f.id, kotak.splice(0, 10)); };
+  await jalanKolam('Sedang diimbas: ' + f.nama, senarai, async g => {
+    const im = await muatImej(await ambilUntukImbas(g.id));
+    const c = kecilkan(im, 1600);
+    const faces = await kesanMuka(c);
+    kotak.push({ id: g.id, nama: g.nama, w: im.width, h: im.height, faces });
+    await flush(false);
+    return faces.length;
+  }, () => flush(true));
+}
+
+/* ---------- Upload dari laptop ---------- */
+const UP_SIAP = 'smkrp_upload_siap';
+function isiPilihanMajlis() {
+  const sel = $('upMajlis'), dulu = sel.value;
+  sel.innerHTML = folders.map(f => `<option value="${esc(f.id)}">${esc(f.nama)}</option>`).join('') + '<option value="__baru">+ Majlis baru…</option>';
+  if (dulu && [...sel.options].some(o => o.value === dulu)) sel.value = dulu;
+  if (!folders.length) sel.value = '__baru';
+  $('upBaruWrap').classList.toggle('hide', sel.value !== '__baru');
+}
+$('upMajlis').onchange = () => $('upBaruWrap').classList.toggle('hide', $('upMajlis').value !== '__baru');
+const keBase64 = blob => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1]); r.onerror = no; r.readAsDataURL(blob); });
+async function uploadFail(files) {
+  $('errUpload').textContent = '';
+  files = [...files].filter(f => /^image\//.test(f.type) || /\.(jpe?g|png|webp|heic|heif)$/i.test(f.name));
+  if (!files.length) { $('errUpload').textContent = 'Tiada fail gambar dipilih.'; return; }
+  if (sedangImbas) { $('errUpload').textContent = 'Tunggu proses semasa selesai dahulu.'; return; }
+  if (!modelSedia) { $('errUpload').textContent = 'Model muka masih dimuatkan. Cuba sebentar lagi.'; return; }
+  let folderId = $('upMajlis').value, nama = '';
+  try {
+    if (folderId === '__baru' || !folderId) {
+      nama = $('upBaru').value.trim();
+      if (!nama) { $('errUpload').textContent = 'Taip nama majlis baru dahulu.'; return; }
+      const r = await api('buatMajlis', { token, nama });
+      folderId = r.id; nama = r.nama; $('upBaru').value = '';
+      await admMuat(); $('upMajlis').value = folderId; $('upBaruWrap').classList.add('hide');
+    } else nama = (folders.find(f => f.id === folderId) || {}).nama || '';
+  } catch (e) {
+    $('errUpload').textContent = tiadaTindakan(e) ? 'Kemas kini Code.gs dahulu untuk guna upload.' : e.message; return;
+  }
+  const siapSet = new Set(baca(UP_SIAP, []));
+  const kunciF = f => folderId + '|' + f.name + '|' + f.size;
+  const baru = files.filter(f => !siapSet.has(kunciF(f)));
+  if (!baru.length) { $('errUpload').textContent = 'Semua gambar ini sudah pernah di-upload ke majlis ini.'; return; }
+  await jalanKolam('Sedang upload: ' + nama, baru, async file => {
+    const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    const besar = kecilkan(bmp, 2048);
+    if (bmp.close) bmp.close();
+    const faces = await kesanMuka(kecilkan(besar, 1600));
+    const blob = await new Promise(r => besar.toBlob(r, 'image/jpeg', 0.85));
+    await api('uploadGambar', { token, folderId, nama: file.name.replace(/\.[^.]+$/, '') + '.jpg', data: await keBase64(blob), w: besar.width, h: besar.height, faces });
+    siapSet.add(kunciF(file)); simpan(UP_SIAP, [...siapSet].slice(-20000));
+    return faces.length;
+  });
+}
+$('upFail').onchange = e => { uploadFail(e.target.files); e.target.value = ''; };
+$('upFolder').onchange = e => { uploadFail(e.target.files); e.target.value = ''; };
 $('btnHenti').onclick = () => { henti = true; };
 async function binaIndeks() { try { await api('binaIndeks', { token }); } catch (e) { console.warn('Indeks:', e.message); } }
 
