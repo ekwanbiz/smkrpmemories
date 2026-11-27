@@ -15,7 +15,7 @@
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--navy:#13205c;--tajuk:#13205c;--kuning:#ffe14d;--kuning2:#fff3b0;--kuning3:#fff6c2;--bg:#f5f6fa;--card:#fff;--field:#fff;--ink:#111827;--mut:#5b6478;--line:#e6e9f2;--line2:var(--line2);--soft:var(--soft);--soft2:var(--soft2);--skel:var(--skel);--skel2:var(--skel2);--garis2:var(--garis2);--garis-in:var(--garis-in);--biru-bg:var(--biru-bg);--biru-line:var(--biru-line);--biru-ink:var(--biru-ink);--nota-bg:var(--nota-bg);--nota-line:var(--nota-line);--nota-ink:var(--nota-ink);--merah-bg:var(--merah-bg);--merah-ink:var(--merah-ink);--hijau-bg:var(--hijau-bg);--hijau-ink:var(--hijau-ink);--kelabu-bg:var(--kelabu-bg);--kelabu-ink:var(--kelabu-ink);--stat2:var(--stat2);--ok:#16a34a;--bad:#dc2626;color-scheme:light}
+:root{--navy:#13205c;--tajuk:#13205c;--kuning:#ffe14d;--kuning2:#fff3b0;--kuning3:#fff6c2;--bg:#f5f6fa;--card:#fff;--field:#fff;--ink:#111827;--mut:#5b6478;--line:#e6e9f2;--line2:#eef1f7;--soft:#eef1f8;--soft2:#e6ebf5;--skel:#e9ecf4;--skel2:#f6f7fb;--garis2:#dbe0ec;--garis-in:#cdd5e4;--biru-bg:#eef3ff;--biru-line:#cfdcff;--biru-ink:#3a52b8;--nota-bg:#fff7dc;--nota-line:#f3dc8a;--nota-ink:#5c4400;--merah-bg:#fde8e8;--merah-ink:#991b1b;--hijau-bg:#dcf5e4;--hijau-ink:#14532d;--kelabu-bg:#eceff4;--kelabu-ink:#3c4559;--stat2:#dfe6fb;--ok:#16a34a;--bad:#dc2626;color-scheme:light}
 :root[data-tema=gelap]{--navy:#3550c4;--tajuk:#dbe4ff;--kuning2:#3d3410;--kuning3:#2a2410;--bg:#0b1120;--card:#141c30;--field:#0f1628;--ink:#e8ecf6;--mut:#9aa6c2;--line:#26304a;--line2:#222b42;--soft:#1f2942;--soft2:#26304a;--skel:#1d263d;--skel2:#2a3550;--garis2:#34405e;--garis-in:#3a4766;--biru-bg:#18223d;--biru-line:#2c3b66;--biru-ink:#a9bbff;--nota-bg:#2f2810;--nota-line:#5e4e1a;--nota-ink:#f3dd9c;--merah-bg:#3d1b1b;--merah-ink:#ffb3b3;--hijau-bg:#14301f;--hijau-ink:#8fe3ab;--kelabu-bg:#232c42;--kelabu-ink:#c3cbe0;--stat2:#1c2850;--bad:#ff6b6b;color-scheme:dark}
 *{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif}
@@ -190,6 +190,14 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
 .btn:active:not(:disabled),.pil:active,.bulatKecil:active,.chips button:active,.galeri button:active,.gaGrid button:active,.aksi button:active:not(:disabled),.tabs button:active{transform:scale(.96);filter:brightness(.92)}
 .btn.sibuk{pointer-events:none;opacity:.85}
 .btn.sibuk::before{content:"";width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:putar .7s linear infinite;flex:none}
+.jemput{position:fixed;left:12px;right:12px;bottom:calc(90px + env(safe-area-inset-bottom));z-index:15;max-width:540px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 14px 34px rgba(0,0,0,.28);display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.jemput img{width:48px;height:48px;border-radius:12px;flex:none}
+.jemput .teks{flex:1 1 180px}
+.jemput .teks b{display:block;color:var(--tajuk);font:600 16px Outfit}
+.jemput .teks small{color:var(--mut);font-size:13px}
+.jemput .row{flex:1 1 100%;justify-content:flex-end;gap:8px}
+@media (prefers-reduced-motion:no-preference){.jemput{animation:naik .35s ease-out}}
+@keyframes naik{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
 .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:50;background:var(--navy);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;max-width:90vw;text-align:center}
 .offline{background:var(--merah-bg);color:var(--merah-ink);text-align:center;font-size:13px;padding:8px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -477,6 +485,11 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
     <button id="qrTutup" class="btn alt penuh" style="margin-top:8px">Tutup</button>
   </div>
 </div>
+<div id="jemputPasang" class="jemput hide" role="dialog" aria-labelledby="jpTajuk">
+  <img src="icon-192.png" alt="">
+  <div class="teks"><b id="jpTajuk">Pasang SMKRP Memories?</b><small>Buka terus dari skrin utama telefon, tak perlu cari link lagi.</small></div>
+  <div class="row"><button id="jpNanti" class="btn alt kecil">Nanti</button><button id="jpCara" class="btn kuning kecil">Tunjuk cara</button></div>
+</div>
 <div id="toast" class="toast hide" role="status"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/dist/face-api.js"></script>
@@ -722,6 +735,7 @@ async function cari(b64) {
     saya = { masa: Date.now(), hasil }; simpan('smkrp_saya', saya);
     tapis = (majlisQR && hasil.some(x => x.majlis === majlisQR)) ? majlisQR : 'Semua';
     mencari = false; selesaiCari(); renderSaya();
+    if (hasil.length) jemputPasang();
   } catch (e) {
     mencari = false; selesaiCari();
     $('sayaKosong').classList.remove('hide');
@@ -1015,6 +1029,23 @@ const simpanKekal = (k, v) => { try { v === null ? localStorage.removeItem(k) : 
 const bacaKekal = k => { try { return localStorage.getItem(k) || sessionStorage.getItem(k) || ''; } catch (e) { return ''; } };
 let token = bacaKekal('smkrp_tok');
 let folders = [], henti = false, sedangImbas = false;
+
+/* ---------- Jemputan pasang (selepas carian pertama berjaya) ---------- */
+function jemputPasang() {
+  if (standalone || dalamBingkai) return;
+  let lepas = 0; try { lepas = Number(localStorage.getItem('smkrp_jemput_nanti')) || 0; } catch (e) {}
+  if (Date.now() - lepas < 7 * 864e5) return;
+  if (sessionStorage.getItem('smkrp_jemput_sesi')) return;
+  try { sessionStorage.setItem('smkrp_jemput_sesi', '1'); } catch (e) {}
+  setTimeout(() => {
+    if (!$('lihat').classList.contains('hide') || !$('kamera').classList.contains('hide')) return;
+    $('jemputPasang').classList.remove('hide'); $('btnSemua').style.visibility = 'hidden';
+  }, 2500);
+}
+function tutupJemput() { $('jemputPasang').classList.add('hide'); $('btnSemua').style.visibility = ''; }
+$('jpNanti').onclick = () => { try { localStorage.setItem('smkrp_jemput_nanti', String(Date.now())); } catch (e) {} tutupJemput(); };
+$('jpCara').onclick = () => { tutupJemput(); bukaPanduan(); };
+addEventListener('appinstalled', tutupJemput);
 
 /* ---------- Tema cerah / gelap ---------- */
 const IKON_TEMA = {
