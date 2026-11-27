@@ -20,7 +20,9 @@ body.tanpaNav{padding-bottom:0}
 button{font:inherit}
 .topbar{position:sticky;top:0;z-index:5;height:64px;padding:0 16px;padding-top:env(safe-area-inset-top);box-sizing:content-box;display:flex;align-items:center;gap:10px;background:#fff;border-bottom:1px solid var(--line)}
 .topbar img{width:38px;height:36px;object-fit:contain}
-.topbar .nama{flex:1;font:800 19px Outfit,sans-serif;color:var(--navy)}
+.jenama{flex:1;display:flex;align-items:center;gap:10px;min-height:44px;text-decoration:none;border-radius:12px;-webkit-tap-highlight-color:transparent}
+.jenama:active{opacity:.7}
+.topbar .nama{font:800 19px Outfit,sans-serif;color:var(--navy)}
 .topbar .nama span{color:#c9a400}
 .pil{min-height:36px;padding:0 14px;border-radius:999px;border:0;background:var(--navy);color:#fff;font:600 13px Inter;cursor:pointer}
 .wrap{max-width:560px;margin:0 auto}
@@ -192,8 +194,10 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
 <body>
 <div id="offline" class="offline hide">Tiada sambungan internet. Carian dan gambar perlukan internet.</div>
 <header class="topbar">
-  <img src="logo.png" alt="Logo SMK Rantau Panjang">
-  <div class="nama">SMKRP <span>Memories</span></div>
+  <a href="#" class="jenama" id="jenama" aria-label="SMKRP Memories – ke halaman utama">
+    <img src="logo.png" alt="">
+    <div class="nama">SMKRP <span>Memories</span></div>
+  </a>
   <button id="btnPasangAtas" class="pil">Pasang</button>
 </header>
 
@@ -997,6 +1001,12 @@ const simpanKekal = (k, v) => { try { v === null ? localStorage.removeItem(k) : 
 const bacaKekal = k => { try { return localStorage.getItem(k) || sessionStorage.getItem(k) || ''; } catch (e) { return ''; } };
 let token = bacaKekal('smkrp_tok');
 let folders = [], henti = false, sedangImbas = false;
+
+/* ---------- Logo = ke halaman utama ---------- */
+$('jenama').onclick = e => {
+  e.preventDefault();
+  if (location.hash) location.hash = ''; else scrollTo({ top: 0, behavior: 'smooth' });
+};
 
 /* ---------- Tab tambah gambar ---------- */
 function tabTambah(t) {
