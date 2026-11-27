@@ -10,58 +10,62 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="SMKRP Memories">
+<script>
+(function(){try{var t=localStorage.getItem('smkrp_tema')||'auto';var g=t==='gelap'||(t==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.tema=g?'gelap':'cerah';}catch(e){}})();
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--navy:#13205c;--kuning:#ffe14d;--kuning2:#fff3b0;--bg:#f5f6fa;--ink:#111827;--mut:#5b6478;--line:#e6e9f2;--ok:#16a34a;--bad:#dc2626}
+:root{--navy:#13205c;--tajuk:#13205c;--kuning:#ffe14d;--kuning2:#fff3b0;--kuning3:#fff6c2;--bg:#f5f6fa;--card:#fff;--field:#fff;--ink:#111827;--mut:#5b6478;--line:#e6e9f2;--line2:var(--line2);--soft:var(--soft);--soft2:var(--soft2);--skel:var(--skel);--skel2:var(--skel2);--garis2:var(--garis2);--garis-in:var(--garis-in);--biru-bg:var(--biru-bg);--biru-line:var(--biru-line);--biru-ink:var(--biru-ink);--nota-bg:var(--nota-bg);--nota-line:var(--nota-line);--nota-ink:var(--nota-ink);--merah-bg:var(--merah-bg);--merah-ink:var(--merah-ink);--hijau-bg:var(--hijau-bg);--hijau-ink:var(--hijau-ink);--kelabu-bg:var(--kelabu-bg);--kelabu-ink:var(--kelabu-ink);--stat2:var(--stat2);--ok:#16a34a;--bad:#dc2626;color-scheme:light}
+:root[data-tema=gelap]{--navy:#3550c4;--tajuk:#dbe4ff;--kuning2:#3d3410;--kuning3:#2a2410;--bg:#0b1120;--card:#141c30;--field:#0f1628;--ink:#e8ecf6;--mut:#9aa6c2;--line:#26304a;--line2:#222b42;--soft:#1f2942;--soft2:#26304a;--skel:#1d263d;--skel2:#2a3550;--garis2:#34405e;--garis-in:#3a4766;--biru-bg:#18223d;--biru-line:#2c3b66;--biru-ink:#a9bbff;--nota-bg:#2f2810;--nota-line:#5e4e1a;--nota-ink:#f3dd9c;--merah-bg:#3d1b1b;--merah-ink:#ffb3b3;--hijau-bg:#14301f;--hijau-ink:#8fe3ab;--kelabu-bg:#232c42;--kelabu-ink:#c3cbe0;--stat2:#1c2850;--bad:#ff6b6b;color-scheme:dark}
 *{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif}
 body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
 body.tanpaNav{padding-bottom:0}
 button{font:inherit}
-.topbar{position:sticky;top:0;z-index:5;height:64px;padding:0 16px;padding-top:env(safe-area-inset-top);box-sizing:content-box;display:flex;align-items:center;gap:10px;background:#fff;border-bottom:1px solid var(--line)}
+.topbar{position:sticky;top:0;z-index:5;height:64px;padding:0 16px;padding-top:env(safe-area-inset-top);box-sizing:content-box;display:flex;align-items:center;gap:10px;background:var(--card);border-bottom:1px solid var(--line)}
 .topbar img{width:38px;height:36px;object-fit:contain}
 .jenama{flex:1;display:flex;align-items:center;gap:10px;min-height:44px;text-decoration:none;border-radius:12px;-webkit-tap-highlight-color:transparent}
 .jenama:active{opacity:.7}
-.topbar .nama{font:800 19px Outfit,sans-serif;color:var(--navy)}
+.topbar .nama{font:800 19px Outfit,sans-serif;color:var(--tajuk)}
 .topbar .nama span{color:#c9a400}
 .pil{min-height:36px;padding:0 14px;border-radius:999px;border:0;background:var(--navy);color:#fff;font:600 13px Inter;cursor:pointer}
 .wrap{max-width:560px;margin:0 auto}
-h1{margin:0;font:800 34px/1.08 Outfit,sans-serif;color:var(--navy)}
-h2{margin:0;font:600 18px Outfit,sans-serif;color:var(--navy)}
+h1{margin:0;font:800 34px/1.08 Outfit,sans-serif;color:var(--tajuk)}
+h2{margin:0;font:600 18px Outfit,sans-serif;color:var(--tajuk)}
 .mut{color:var(--mut);font-size:14px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 20px;border-radius:14px;border:0;font:600 16px Inter;cursor:pointer;background:var(--navy);color:#fff;text-decoration:none}
-.btn.alt{background:#fff;color:var(--navy);border:1.5px solid #dbe0ec}
-.btn.kuning{background:var(--kuning);color:var(--navy)}
-.btn.merah{background:#fff;color:var(--bad);border:1.5px solid var(--bad)}
+.btn.alt{background:var(--card);color:var(--tajuk);border:1.5px solid var(--garis2)}
+.btn.kuning{background:var(--kuning);color:#13205c}
+.btn.merah{background:var(--card);color:var(--bad);border:1.5px solid var(--bad)}
 .btn.kecil{min-height:40px;padding:0 14px;font-size:14px}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 button:focus-visible,a:focus-visible{outline:3px solid var(--kuning);outline-offset:2px}
 .penuh{width:100%}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;margin:0 16px 14px}
-.nota{background:#fff7dc;border:1px solid #f3dc8a;color:#5c4400;border-radius:12px;padding:12px 14px;font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin:0 16px 14px}
+.nota{background:var(--nota-bg);border:1px solid var(--nota-line);color:var(--nota-ink);border-radius:12px;padding:12px 14px;font-size:14px}
 .err{color:var(--bad);font-size:14px;margin-top:8px;text-align:center}
 .hide{display:none!important}
 
 /* Utama */
 .hero{padding:28px 24px 0}
 .selfieBtn{display:flex;flex-direction:column;align-items:center;gap:12px;padding:36px 0 12px}
-.bulat{width:196px;height:196px;border-radius:50%;border:0;background:var(--kuning);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 14px #fff6c2,0 18px 40px rgba(19,32,92,.22);cursor:pointer;padding:0}
+.bulat{width:196px;height:196px;border-radius:50%;border:0;background:var(--kuning);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 14px var(--kuning3),0 18px 40px rgba(19,32,92,.22);cursor:pointer;padding:0}
 .bulat span{width:152px;height:152px;border-radius:50%;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#fff;font:600 15px Inter}
 .bulat:disabled{opacity:.6}
 @media (prefers-reduced-motion:no-preference){.bulat:not(:disabled){animation:nadi 2.4s ease-in-out infinite}}
-@keyframes nadi{50%{box-shadow:0 0 0 22px #fff6c2,0 18px 40px rgba(19,32,92,.22)}}
+@keyframes nadi{50%{box-shadow:0 0 0 22px var(--kuning3),0 18px 40px rgba(19,32,92,.22)}}
 .stats{display:flex;gap:10px;padding:18px 16px 0}
 .stat{flex:1;padding:14px;border-radius:16px;background:var(--kuning2)}
-.stat:nth-child(2){background:#dfe6fb}
-.stat b{display:block;font:800 24px Outfit;color:var(--navy)}
-.stat span{font-size:12px;color:#3c4559}
+.stat:nth-child(2){background:var(--stat2)}
+.stat b{display:block;font:800 24px Outfit;color:var(--tajuk)}
+.stat span{font-size:12px;color:var(--kelabu-ink)}
 
 /* Nav bawah */
-nav.bawah{position:fixed;left:0;right:0;bottom:0;z-index:6;height:76px;padding-bottom:env(safe-area-inset-bottom);box-sizing:content-box;background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+nav.bawah{position:fixed;left:0;right:0;bottom:0;z-index:6;height:76px;padding-bottom:env(safe-area-inset-bottom);box-sizing:content-box;background:var(--card);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
 nav.bawah a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--mut);font-size:12px;text-decoration:none}
 nav.bawah a i{display:flex;padding:4px 18px;border-radius:999px}
-nav.bawah a.on{color:var(--navy);font-weight:600}
+nav.bawah a.on{color:var(--tajuk);font-weight:600}
 nav.bawah a.on i{background:var(--kuning2)}
 
 /* Selfie (gaya Face ID) */
@@ -89,30 +93,30 @@ nav.bawah a.on i{background:var(--kuning2)}
 .kepala{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:18px 16px 8px}
 .kepala h1{font-size:28px}
 .chips{display:flex;gap:8px;overflow-x:auto;padding:6px 16px 12px;scrollbar-width:none}
-.chips button{flex:none;min-height:36px;padding:0 14px;border-radius:999px;border:1.5px solid #dbe0ec;background:#fff;color:var(--navy);font:600 13px Inter;cursor:pointer;white-space:nowrap}
+.chips button{flex:none;min-height:36px;padding:0 14px;border-radius:999px;border:1.5px solid var(--garis2);background:var(--card);color:var(--tajuk);font:600 13px Inter;cursor:pointer;white-space:nowrap}
 .chips button.on{background:var(--navy);border-color:var(--navy);color:#fff}
 .lbl{font:600 13px Inter;color:var(--mut);padding:12px 16px 8px}
 .galeri{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:calc(min(560px,100vw)/3);gap:2px}
-.galeri button{position:relative;padding:0;border:0;overflow:hidden;cursor:pointer;background:#e9ecf4}
+.galeri button{position:relative;padding:0;border:0;overflow:hidden;cursor:pointer;background:var(--skel)}
 .galeri button.besar{grid-column:span 2;grid-row:span 2}
 .galeri img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .3s}
 .galeri img.siap{opacity:1}
-.galeri .pct{position:absolute;left:8px;bottom:8px;padding:2px 7px;border-radius:6px;background:rgba(255,255,255,.92);font-size:11px;font-weight:600;color:var(--navy)}
+.galeri .pct{position:absolute;left:8px;bottom:8px;padding:2px 7px;border-radius:6px;background:rgba(255,255,255,.92);font-size:11px;font-weight:600;color:#13205c}
 .galeri .hati{position:absolute;right:6px;top:6px;color:#fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
-@media (prefers-reduced-motion:no-preference){.galeri button:not(.ada){background:linear-gradient(90deg,#e9ecf4 0,#f6f7fb 50%,#e9ecf4 100%);background-size:200% 100%;animation:kilat 1.2s linear infinite}}
+@media (prefers-reduced-motion:no-preference){.galeri button:not(.ada){background:linear-gradient(90deg,var(--skel) 0,var(--skel2) 50%,var(--skel) 100%);background-size:200% 100%;animation:kilat 1.2s linear infinite}}
 @keyframes kilat{to{background-position:-200% 0}}
-.fab{position:fixed;right:16px;bottom:calc(96px + env(safe-area-inset-bottom));z-index:4;min-height:52px;padding:0 20px;border-radius:999px;border:0;background:var(--kuning);color:var(--navy);font:600 15px Inter;display:flex;align-items:center;gap:8px;box-shadow:0 10px 24px rgba(19,32,92,.25);cursor:pointer}
+.fab{position:fixed;right:16px;bottom:calc(96px + env(safe-area-inset-bottom));z-index:4;min-height:52px;padding:0 20px;border-radius:999px;border:0;background:var(--kuning);color:#13205c;font:600 15px Inter;display:flex;align-items:center;gap:8px;box-shadow:0 10px 24px rgba(19,32,92,.25);cursor:pointer}
 .kosong{text-align:center;padding:48px 24px}
-.kosong .ikon{width:88px;height:88px;border-radius:50%;background:var(--kuning2);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--navy)}
-.padanan{margin:0 16px 12px;padding:12px 14px;background:#eef3ff;border:1px solid #cfdcff;border-radius:14px}
-.padanan .tajukP{display:flex;justify-content:space-between;align-items:baseline;font:600 14px Inter;color:var(--navy)}
-.padanan .tajukP span{font-weight:500;color:#3a52b8}
-.padanan .baris{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:var(--navy);margin-top:6px}
+.kosong .ikon{width:88px;height:88px;border-radius:50%;background:var(--kuning2);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--tajuk)}
+.padanan{margin:0 16px 12px;padding:12px 14px;background:var(--biru-bg);border:1px solid var(--biru-line);border-radius:14px}
+.padanan .tajukP{display:flex;justify-content:space-between;align-items:baseline;font:600 14px Inter;color:var(--tajuk)}
+.padanan .tajukP span{font-weight:500;color:var(--biru-ink)}
+.padanan .baris{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:var(--tajuk);margin-top:6px}
 .padanan small{display:block;color:var(--mut);font-size:12px;margin-top:6px;line-height:1.4}
 #thr{-webkit-appearance:none;appearance:none;height:8px;border-radius:4px;background:linear-gradient(90deg,#13205c,#5b7bef);outline:none}
-#thr::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#fff;border:4px solid #13205c;box-shadow:0 2px 6px rgba(19,32,92,.35);cursor:pointer}
-#thr::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:4px solid #13205c;cursor:pointer}
-input[type=range]{flex:1;accent-color:var(--navy)}
+#thr::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--card);border:4px solid #13205c;box-shadow:0 2px 6px rgba(19,32,92,.35);cursor:pointer}
+#thr::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--card);border:4px solid #13205c;cursor:pointer}
+input[type=range]{flex:1;accent-color:var(--tajuk)}
 
 /* Paparan penuh */
 .lihat{position:fixed;inset:0;z-index:30;background:#05070f;color:#fff;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);touch-action:pan-y}
@@ -130,64 +134,64 @@ input[type=range]{flex:1;accent-color:var(--navy)}
 .lihat .petunjuk{text-align:center;font-size:12px;color:#aab3c8;padding:8px 0}
 .aksi{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0 16px 20px}
 .aksi button{min-height:64px;border-radius:16px;border:0;font:600 13px Inter;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer}
-.aksi .k1{background:#1f8f4e;color:#fff}.aksi .k2{background:var(--kuning);color:var(--navy)}.aksi .k3{background:rgba(255,255,255,.12);color:#fff}
+.aksi .k1{background:#1f8f4e;color:#fff}.aksi .k2{background:var(--kuning);color:#13205c}.aksi .k3{background:rgba(255,255,255,.12);color:#fff}
 .aksi .k3.on{color:var(--kuning)}
 
 /* Tentang & admin */
 .langkah{display:flex;gap:12px;align-items:flex-start;margin:8px 0}
 .langkah b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center}
-.ikonT{display:inline-flex;vertical-align:middle;padding:1px 6px;border-radius:6px;background:#eef2fb;font-weight:600;font-size:14px}
+.ikonT{display:inline-flex;vertical-align:middle;padding:1px 6px;border-radius:6px;background:var(--soft);font-weight:600;font-size:14px}
 ol{margin:6px 0 0;padding-left:22px}li{margin:4px 0}
 label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;margin-bottom:12px}
-select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;border-radius:10px;border:1.5px solid #cdd5e4;font:16px Inter;background:#fff;color:var(--ink)}
-.bar{height:12px;background:#e6ebf5;border-radius:6px;overflow:hidden;margin:10px 0}
+select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;border-radius:10px;border:1.5px solid var(--garis-in);font:16px Inter;background:var(--field);color:var(--ink)}
+.bar{height:12px;background:var(--soft2);border-radius:6px;overflow:hidden;margin:10px 0}
 .bar div{height:100%;width:0;background:var(--navy);transition:width .2s}
 .astat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 16px 14px}
-.astat div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
-.astat b{display:block;font:800 22px Outfit;color:var(--navy)}
-.folder{border-top:1px solid #eef1f7;padding:12px 0}
+.astat div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+.astat b{display:block;font:800 22px Outfit;color:var(--tajuk)}
+.folder{border-top:1px solid var(--line2);padding:12px 0}
 .chip{padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
-.chip.aktif{background:#dcf5e4;color:#14532d}.chip.sembunyi{background:#eceff4;color:#3c4559}
+.chip.aktif{background:var(--hijau-bg);color:var(--hijau-ink)}.chip.sembunyi{background:var(--kelabu-bg);color:var(--kelabu-ink)}
 .modal{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center}
 .modal.on{display:flex}
-.modal .sheet{background:#fff;width:100%;max-width:560px;border-radius:22px 22px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom))}
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:#eef1f8;border-radius:12px;padding:4px;margin:12px 0 14px}
+.modal .sheet{background:var(--card);width:100%;max-width:560px;border-radius:22px 22px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom))}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--soft);border-radius:12px;padding:4px;margin:12px 0 14px}
 .tabs button{min-height:40px;border:0;border-radius:9px;background:transparent;font:600 14px Inter;color:var(--mut);cursor:pointer}
-.tabs button.on{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(0,0,0,.08)}
-.lk{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid #eef1f7}
+.tabs button.on{background:var(--card);color:var(--tajuk);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.lk{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line2)}
 .lk:first-child{border-top:0}
 .lk .no{flex:none;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;font:600 13px Inter;display:flex;align-items:center;justify-content:center}
-.lk .gb{flex:none;width:44px;height:44px;border-radius:12px;background:#f1f3f9;color:var(--navy);display:flex;align-items:center;justify-content:center}
+.lk .gb{flex:none;width:44px;height:44px;border-radius:12px;background:var(--soft);color:var(--tajuk);display:flex;align-items:center;justify-content:center}
 .lk p{margin:0;font-size:15px}.lk small{display:block;color:var(--mut);font-size:13px}
 .sheet .tutup{float:right}
-.muatBox{margin:0 16px 10px;padding:12px 14px;background:#fff;border:1px solid var(--line);border-radius:14px}
+.muatBox{margin:0 16px 10px;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-radius:14px}
 .muatBox .row{justify-content:space-between;font-size:14px}
-.muatBox b{color:var(--navy);font-weight:600}
+.muatBox b{color:var(--tajuk);font-weight:600}
 .muatBox .bar{height:8px;margin:8px 0 0}
-.muatBox .bar div{background:linear-gradient(90deg,var(--navy),#3a52b8);transition:width .35s}
+.muatBox .bar div{background:linear-gradient(90deg,var(--navy),var(--biru-ink));transition:width .35s}
 .gaGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px;margin-top:12px;align-content:start;overflow-y:auto;flex:1;min-height:0}
-.gaGrid button{position:relative;aspect-ratio:1;border:0;padding:0;border-radius:10px;overflow:hidden;background:#e9ecf4;cursor:pointer}
+.gaGrid button{position:relative;aspect-ratio:1;border:0;padding:0;border-radius:10px;overflow:hidden;background:var(--skel);cursor:pointer}
 .gaGrid img{width:100%;height:100%;object-fit:cover;display:block}
-.gaGrid span{position:absolute;left:6px;bottom:6px;padding:2px 7px;border-radius:6px;background:rgba(255,255,255,.92);font-size:11px;font-weight:600;color:var(--navy)}
-.gaGrid span.kosong{background:#fde8e8;color:#991b1b}
-.bannerMajlis{margin:14px 16px 0;padding:12px 14px;border-radius:14px;background:var(--kuning2);color:var(--navy);display:flex;gap:10px;align-items:center;font-size:14px}
+.gaGrid span{position:absolute;left:6px;bottom:6px;padding:2px 7px;border-radius:6px;background:rgba(255,255,255,.92);font-size:11px;font-weight:600;color:#13205c}
+.gaGrid span.kosong{background:var(--merah-bg);color:var(--merah-ink)}
+.bannerMajlis{margin:14px 16px 0;padding:12px 14px;border-radius:14px;background:var(--kuning2);color:var(--tajuk);display:flex;gap:10px;align-items:center;font-size:14px}
 .modal.tengah{align-items:center}
 .strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;margin:10px 0}
-.strip div{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:#e9ecf4;animation:masuk .3s ease-out}
+.strip div{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:var(--skel);animation:masuk .3s ease-out}
 .strip img{width:100%;height:100%;object-fit:cover;display:block}
-.strip span{position:absolute;right:3px;bottom:3px;padding:0 5px;border-radius:5px;background:rgba(255,255,255,.92);font-size:10px;font-weight:700;color:var(--navy)}
-.strip span.kosong{background:#fde8e8;color:#991b1b}
+.strip span{position:absolute;right:3px;bottom:3px;padding:0 5px;border-radius:5px;background:rgba(255,255,255,.92);font-size:10px;font-weight:700;color:#13205c}
+.strip span.kosong{background:var(--merah-bg);color:var(--merah-ink)}
 @keyframes masuk{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
-.pusing{width:64px;height:64px;border-radius:50%;border:6px solid var(--kuning2);border-top-color:var(--navy);margin:0 auto 18px;animation:putar 0.9s linear infinite}
+.pusing{width:64px;height:64px;border-radius:50%;border:6px solid var(--kuning2);border-top-color:var(--tajuk);margin:0 auto 18px;animation:putar 0.9s linear infinite}
 @keyframes putar{to{transform:rotate(360deg)}}
 .skeleton{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;margin-top:22px}
-.skeleton i{aspect-ratio:1;background:linear-gradient(90deg,#e9ecf4 0,#f6f7fb 50%,#e9ecf4 100%);background-size:200% 100%;animation:kilat 1.2s linear infinite}
+.skeleton i{aspect-ratio:1;background:linear-gradient(90deg,var(--skel) 0,var(--skel2) 50%,var(--skel) 100%);background-size:200% 100%;animation:kilat 1.2s linear infinite}
 .btn,.pil,.bulatKecil,.chips button,.galeri button,.gaGrid button,.aksi button,.tabs button{transition:transform .08s ease,filter .15s}
 .btn:active:not(:disabled),.pil:active,.bulatKecil:active,.chips button:active,.galeri button:active,.gaGrid button:active,.aksi button:active:not(:disabled),.tabs button:active{transform:scale(.96);filter:brightness(.92)}
 .btn.sibuk{pointer-events:none;opacity:.85}
 .btn.sibuk::before{content:"";width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:putar .7s linear infinite;flex:none}
 .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:50;background:var(--navy);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;max-width:90vw;text-align:center}
-.offline{background:#fde8e8;color:#7f1d1d;text-align:center;font-size:13px;padding:8px}
+.offline{background:var(--merah-bg);color:var(--merah-ink);text-align:center;font-size:13px;padding:8px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -198,6 +202,7 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
     <img src="logo.png" alt="">
     <div class="nama">SMKRP <span>Memories</span></div>
   </a>
+  <button id="btnTema" class="bulatKecil" style="background:var(--soft);color:var(--tajuk);margin-right:6px" aria-label="Tukar tema"></button>
   <button id="btnPasangAtas" class="pil">Pasang</button>
 </header>
 
@@ -224,7 +229,7 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
     </div>
     <div class="stats" id="stats"></div>
     <div id="kadSaya" class="card hide" style="margin-top:14px;display:flex;align-items:center;gap:12px">
-      <div style="flex:1"><b style="color:var(--navy)">Gambar Saya</b><div class="mut" id="kadSayaTeks"></div></div>
+      <div style="flex:1"><b style="color:var(--tajuk)">Gambar Saya</b><div class="mut" id="kadSayaTeks"></div></div>
       <a href="#saya" class="btn kecil">Buka</a>
     </div>
   </section>
@@ -233,7 +238,7 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
   <section id="vSaya" class="hide">
     <div class="kepala">
       <div><h1>Gambar Saya</h1><div class="mut" id="sayaInfo"></div></div>
-      <button class="bulatKecil" style="background:#eef1f8;color:var(--navy)" id="btnSelfieSemula" aria-label="Selfie semula">
+      <button class="bulatKecil" style="background:var(--soft);color:var(--tajuk)" id="btnSelfieSemula" aria-label="Selfie semula">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
       </button>
     </div>
@@ -284,6 +289,15 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
         <li>"Gambar Saya" disimpan dalam telefon ini sahaja.</li>
       </ul>
       <button id="btnLupa" class="btn alt kecil" style="margin-top:12px">Padam "Gambar Saya" dari telefon ini</button>
+    </div>
+    <div class="card">
+      <h2 style="margin-bottom:6px">Tema</h2>
+      <div class="tabs" role="radiogroup" aria-label="Tema" style="grid-template-columns:repeat(3,1fr);margin-bottom:0">
+        <button data-tema="auto" role="radio">Auto</button>
+        <button data-tema="cerah" role="radio">Cerah</button>
+        <button data-tema="gelap" role="radio">Gelap</button>
+      </div>
+      <p class="mut" style="margin:8px 0 0;font-size:13px">Auto = ikut tetapan telefon.</p>
     </div>
     <div id="kadPasang" class="card">
       <h2 style="margin-bottom:6px">Pasang app di telefon</h2>
@@ -401,7 +415,7 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
 <div id="sah" class="modal"><div class="sheet"><h2 id="sahTajuk">Pasti?</h2><p class="mut" id="sahTeks"></p><div class="row"><button id="sahYa" class="btn merah">Ya</button><button id="sahTidak" class="btn alt">Batal</button></div></div></div>
 <div id="panduan" class="modal" role="dialog" aria-modal="true" aria-labelledby="pTajuk">
   <div class="sheet" style="max-height:92vh;overflow-y:auto">
-    <button class="bulatKecil tutup" id="pTutup" style="background:#eef1f8;color:var(--navy)" aria-label="Tutup"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
+    <button class="bulatKecil tutup" id="pTutup" style="background:var(--soft);color:var(--tajuk)" aria-label="Tutup"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
     <h2 id="pTajuk" style="font-size:22px">Cara pasang app</h2>
     <p class="mut" style="margin:4px 0 0">Ikon SMKRP Memories akan muncul di skrin utama telefon.</p>
     <button id="btnPasangTerus" class="btn kuning penuh hide" style="margin-top:14px">Pasang terus sekarang</button>
@@ -426,7 +440,7 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
 </div>
 <div id="sedia" class="modal" role="dialog" aria-modal="true" aria-labelledby="sediaTajuk">
   <div class="sheet" style="text-align:center">
-    <div style="width:64px;height:64px;border-radius:50%;background:var(--kuning2);color:var(--navy);display:flex;align-items:center;justify-content:center;margin:0 auto 12px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg></div>
+    <div style="width:64px;height:64px;border-radius:50%;background:var(--kuning2);color:var(--tajuk);display:flex;align-items:center;justify-content:center;margin:0 auto 12px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg></div>
     <h2 id="sediaTajuk">Gambar sedia</h2>
     <p class="mut" id="sediaTeks" style="margin:6px 0 14px"></p>
     <button id="btnSimpanGaleri" class="btn kuning penuh">Simpan ke galeri</button>
@@ -437,7 +451,7 @@ select,input[type=text],input[type=password]{min-height:46px;padding:0 12px;bord
   <div class="sheet" style="max-width:960px;height:92vh;display:flex;flex-direction:column">
     <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
       <div><h2 id="gaTajuk">Galeri</h2><div class="mut" id="gaInfo"></div></div>
-      <button class="bulatKecil" id="gaTutup" style="background:#eef1f8;color:var(--navy)" aria-label="Tutup"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
+      <button class="bulatKecil" id="gaTutup" style="background:var(--soft);color:var(--tajuk)" aria-label="Tutup"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12"/><path d="M18 6L6 18"/></svg></button>
     </div>
     <div id="gaGrid" class="gaGrid"></div>
     <button id="gaLagi" class="btn alt penuh hide" style="margin-top:10px">Muat lagi</button>
@@ -1001,6 +1015,27 @@ const simpanKekal = (k, v) => { try { v === null ? localStorage.removeItem(k) : 
 const bacaKekal = k => { try { return localStorage.getItem(k) || sessionStorage.getItem(k) || ''; } catch (e) { return ''; } };
 let token = bacaKekal('smkrp_tok');
 let folders = [], henti = false, sedangImbas = false;
+
+/* ---------- Tema cerah / gelap ---------- */
+const IKON_TEMA = {
+  cerah: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  gelap: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>'
+};
+const gelapSistem = matchMedia('(prefers-color-scheme: dark)');
+function pakaiTema() {
+  let t = 'auto'; try { t = localStorage.getItem('smkrp_tema') || 'auto'; } catch (e) {}
+  const gelap = t === 'gelap' || (t === 'auto' && gelapSistem.matches);
+  document.documentElement.dataset.tema = gelap ? 'gelap' : 'cerah';
+  const meta = document.querySelector('meta[name=theme-color]'); if (meta) meta.content = gelap ? '#141c30' : '#ffffff';
+  $('btnTema').innerHTML = gelap ? IKON_TEMA.cerah : IKON_TEMA.gelap;
+  $('btnTema').setAttribute('aria-label', gelap ? 'Tukar ke mod cerah' : 'Tukar ke mod gelap');
+  document.querySelectorAll('[data-tema]').forEach(b => { if (b.tagName === 'BUTTON') { b.classList.toggle('on', b.dataset.tema === t); b.setAttribute('aria-checked', b.dataset.tema === t); } });
+}
+function tetapTema(t) { try { localStorage.setItem('smkrp_tema', t); } catch (e) {} pakaiTema(); }
+$('btnTema').onclick = () => { tetapTema(document.documentElement.dataset.tema === 'gelap' ? 'cerah' : 'gelap'); toast(document.documentElement.dataset.tema === 'gelap' ? 'Mod gelap' : 'Mod cerah'); };
+document.querySelectorAll('button[data-tema]').forEach(b => b.onclick = () => tetapTema(b.dataset.tema));
+gelapSistem.addEventListener('change', pakaiTema);
+pakaiTema();
 
 /* ---------- Logo = ke halaman utama ---------- */
 $('jenama').onclick = e => {
